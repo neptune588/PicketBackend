@@ -14,6 +14,7 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
+        log.info("onAuthenticationFailure()...");
         response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/plain;charset=UTF-8");

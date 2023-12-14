@@ -1,7 +1,7 @@
 package com.swyg.picketbackend.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.swyg.picketbackend.global.jwt.JwtService;
+import com.swyg.picketbackend.global.jwt.service.JwtService;
 import com.swyg.picketbackend.global.jwt.filter.JwtAuthenticationProcessingFilter;
 import com.swyg.picketbackend.global.login.filter.CustomJsonUsernamePasswordAuthenticationFilter;
 import com.swyg.picketbackend.global.login.handler.LoginFailureHandler;
@@ -31,6 +31,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -45,21 +46,24 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final PasswordEncoder passwordEncoder;
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .formLogin(AbstractHttpConfigurer::disable) //  FormLogin 사용 X
                 .httpBasic(AbstractHttpConfigurer::disable) //  httpBasic 사용 X
+                .cors((corConfigurer) -> corConfigurer.configurationSource(corsConfigurationSource())) // CORS 활성화
                 .csrf(AbstractHttpConfigurer::disable)
                 .headers((headers) -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
 
                 .sessionManagement((sessionManagement) ->
-                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // 세션 사용 안함
+        http
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico", "/h2-console/**").permitAll()
-                                .requestMatchers("/signUp").permitAll()
+                                .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/favicon.ico").permitAll()
+                                .requestMatchers("/index.html").permitAll()
+                                .requestMatchers("/signUp").permitAll() // 회원가입 접근 가능
                                 .anyRequest().authenticated() // 그 외 경로는 모두 인증이 필요함
                 )
                 .oauth2Login((oauth2Login) ->
@@ -69,10 +73,11 @@ public class SecurityConfig {
                                 .userInfoEndpoint((userInfoEndpoint) ->
                                         userInfoEndpoint.userService(customOAuth2UserService) // customUserService 설정
                                 )
-                )
-                // 원래 스프링 시큐리티 필터 순서가 LogoutFilter 이후에 로그인 필터 동작
-                // 따라서, LogoutFilter 이후에 우리가 만든 필터 동작하도록 설정
-                // 순서 : LogoutFilter -> JwtAuthenticationProcessingFilter -> CustomJsonUsernamePasswordAuthenticationFilter
+                );
+        // 원래 스프링 시큐리티 필터 순서가 LogoutFilter 이후에 로그인 필터 동작
+        // 따라서, LogoutFilter 이후에 우리가 만든 필터 동작하도록 설정
+        // 순서 : LogoutFilter -> JwtAuthenticationProcessingFilter -> CustomJsonUsernamePasswordAuthenticationFilter
+        http
                 .addFilterAfter(customJsonUsernamePasswordAuthenticationFilter(), LogoutFilter.class)
                 .addFilterBefore(jwtAuthenticationProcessingFilter(), CustomJsonUsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -135,7 +140,7 @@ public class SecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("<http://localhost:3000>", "..."));
+        configuration.setAllowedOrigins(Arrays.asList("<http://localhost:8080>", "..."));
         configuration.setAllowedMethods(Arrays.asList("HEAD", "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Authorization-refresh", "Cache-Control", "Content-Type"));

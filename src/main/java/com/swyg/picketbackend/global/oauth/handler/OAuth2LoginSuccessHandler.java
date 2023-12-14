@@ -1,10 +1,9 @@
 package com.swyg.picketbackend.global.oauth.handler;
 
-import com.swyg.picketbackend.global.jwt.JwtService;
+import com.swyg.picketbackend.global.jwt.service.JwtService;
 import com.swyg.picketbackend.global.oauth.CustomOAuth2User;
 import com.swyg.picketbackend.user.repository.UserRepository;
 import com.swyg.picketbackend.user.util.Role;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,7 +35,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
                 response.addHeader(jwtService.getAccessHeader(), "Bearer " + accessToken);
 
                 // TODO : 최초 소셜로그인 후 리다이렉트 링크 정하기
-                response.sendRedirect("oauth2/sign-up"); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
+                response.sendRedirect("/"); // 프론트의 회원가입 추가 정보 입력 폼으로 리다이렉트
 
                 jwtService.sendAccessAndRefreshToken(response, accessToken, null);
             } else {

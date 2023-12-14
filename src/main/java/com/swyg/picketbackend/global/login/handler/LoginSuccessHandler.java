@@ -1,6 +1,6 @@
 package com.swyg.picketbackend.global.login.handler;
 
-import com.swyg.picketbackend.global.jwt.JwtService;
+import com.swyg.picketbackend.global.jwt.service.JwtService;
 import com.swyg.picketbackend.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -27,6 +27,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException, ServletException {
+        log.info("onAuthenticationSuccess() 호출");
         String email = extractUsername(authentication); // 인증 정보에서 Username(email) 추출
         String accessToken = jwtService.createAccessToken(email); // JwtService의 createAccessToken을 사용하여 AccessToken 발급
         String refreshToken = jwtService.createRefreshToken(); // JwtService의 createRefreshToken을 사용하여 RefreshToken 발급

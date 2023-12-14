@@ -1,9 +1,7 @@
 package com.swyg.picketbackend.global.jwt.filter;
 
 
-import com.swyg.picketbackend.global.exception.CustomException;
-import com.swyg.picketbackend.global.jwt.JwtService;
-import com.swyg.picketbackend.global.util.ErrorCode;
+import com.swyg.picketbackend.global.jwt.service.JwtService;
 import com.swyg.picketbackend.user.domain.User;
 import com.swyg.picketbackend.user.repository.UserRepository;
 import jakarta.servlet.FilterChain;
@@ -50,6 +48,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        log.info("doFilterInternal() 호출");
         if (request.getRequestURI().equals(NO_CHECK_URL)) {
             filterChain.doFilter(request, response); // "/login" 요청이 들어오면, 다음 필터 호출
             return;  // return으로 이후 현재 필터 진행 막기 (안해주면 아래로 내려가서 계속 필터 진행시킴)
@@ -66,8 +65,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         // 리프레시 토큰이 요청 헤더에 존재했다면, 사용자가 AccessToken이 만료되어서
         // RefreshToken까지 보낸 것이므로 리프레시 토큰이 DB의 리프레시 토큰과 일치하는지 판단 후,
         // 일치한다면 AccessToken을 재발급해준다.
-        if(refreshToken !=null){
-            checkRefreshTokenAndReIssueAccessToken(response,refreshToken);
+        if (refreshToken != null) {
+            checkRefreshTokenAndReIssueAccessToken(response, refreshToken);
             return; // RefreshToken을 보낸 경우에는 AccessToken을 재발급 하고 인증 처리는 하지 않게 하기위해 바로 return으로 필터 진행 막기
         }
 
@@ -80,13 +79,14 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
     }
 
     /**
-     *  [리프레시 토큰으로 유저 정보 찾기 & 액세스 토큰/리프레시 토큰 재발급 메소드]
-     *  파라미터로 들어온 헤더에서 추출한 리프레시 토큰으로 DB에서 유저를 찾고, 해당 유저가 있다면
-     *  JwtService.createAccessToken()으로 AccessToken 생성,
-     *  reIssueRefreshToken()로 리프레시 토큰 재발급 & DB에 리프레시 토큰 업데이트 메소드 호출
-     *  그 후 JwtService.sendAccessTokenAndRefreshToken()으로 응답 헤더에 보내기
+     * [리프레시 토큰으로 유저 정보 찾기 & 액세스 토큰/리프레시 토큰 재발급 메소드]
+     * 파라미터로 들어온 헤더에서 추출한 리프레시 토큰으로 DB에서 유저를 찾고, 해당 유저가 있다면
+     * JwtService.createAccessToken()으로 AccessToken 생성,
+     * reIssueRefreshToken()로 리프레시 토큰 재발급 & DB에 리프레시 토큰 업데이트 메소드 호출
+     * 그 후 JwtService.sendAccessTokenAndRefreshToken()으로 응답 헤더에 보내기
      */
     public void checkRefreshTokenAndReIssueAccessToken(HttpServletResponse response, String refreshToken) {
+        log.info("checkRefreshTokenAndReIssueAccessToken() 호출");
         userRepository.findByRefreshToken(refreshToken)
                 .ifPresent(user -> {
                     String reIssuedRefreshToken = reIssueRefreshToken(user);
@@ -101,6 +101,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
      * DB에 재발급한 리프레시 토큰 업데이트 후 Flush
      */
     private String reIssueRefreshToken(User user) {
+        log.info("reIssueRefreshToken() 호출");
         String reIssuedRefreshToken = jwtService.createRefreshToken();
         user.updateRefreshToken(reIssuedRefreshToken);
         userRepository.saveAndFlush(user);
@@ -124,6 +125,7 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
                         .ifPresent(email -> userRepository.findByEmail(email)
                                 .ifPresent(this::saveAuthentication)));
 
+
         filterChain.doFilter(request, response);
     }
 
@@ -136,13 +138,14 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
      * 1. 위에서 만든 UserDetailsUser 객체 (유저 정보)
      * 2. credential(보통 비밀번호로, 인증 시에는 보통 null로 제거)
      * 3. Collection < ? extends GrantedAuthority>로,
-     * UserDetails의 User 객체 안에 Set<GrantedAuthority> authorities이 있어서 getter로 호출한 후에,
+     * UserDetails의 User 객체 안에 Set authorities이 있어서 getter로 호출한 후에,
      * new NullAuthoritiesMapper()로 GrantedAuthoritiesMapper 객체를 생성하고 mapAuthorities()에 담기
      *
      * SecurityContextHolder.getContext()로 SecurityContext를 꺼낸 후,
      * setAuthentication()을 이용하여 위에서 만든 Authentication 객체에 대한 인증 허가 처리
      */
     public void saveAuthentication(User myUser) {
+        log.info("saveAuthentication 호출");
         String password = myUser.getPassword();
         if (password == null) { // 소셜 로그인 유저의 비밀번호 임의로 설정 하여 소셜 로그인 유저도 인증 되도록 설정
             password = RandomStringUtils.randomAlphanumeric(8);
@@ -157,6 +160,8 @@ public class JwtAuthenticationProcessingFilter extends OncePerRequestFilter {
         Authentication authentication =
                 new UsernamePasswordAuthenticationToken(userDetailsUser, null,
                         authoritiesMapper.mapAuthorities(userDetailsUser.getAuthorities()));
+
+        log.info("authentication.getAuthorities() :" + authentication.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
