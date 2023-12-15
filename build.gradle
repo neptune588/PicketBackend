@@ -34,9 +34,12 @@ dependencies {
     //oauth2.0 설정
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     //Swagger 설정
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
-    // JWT 설정
-    implementation 'com.auth0:java-jwt:4.2.1'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
+
+    //jwt 설정
+    implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.5'
+    runtimeOnly group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.5'
 
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
