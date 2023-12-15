@@ -1,5 +1,7 @@
 package com.swyg.picketbackend.auth.util;
 
+import com.swyg.picketbackend.global.exception.CustomException;
+import com.swyg.picketbackend.global.util.ErrorCode;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,7 +18,7 @@ public class SecurityUtil {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication.getName() == null) {
-            throw  new RuntimeException("Security Context 에 인증 정보가 없습니다.");
+            throw  new CustomException(ErrorCode.UNAUTHENTICATION_ACCESS);
         }
 
         return Long.parseLong(authentication.getName());

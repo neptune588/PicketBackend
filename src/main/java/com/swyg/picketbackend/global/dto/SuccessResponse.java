@@ -17,7 +17,6 @@ public class SuccessResponse {
     private final String message;
 
 
-    // RuntimeException 예외 처리 response 메서드
     public static ResponseEntity<SuccessResponse> success(SuccessCode successCode) {
         return ResponseEntity
                 .status(successCode.getStatus())

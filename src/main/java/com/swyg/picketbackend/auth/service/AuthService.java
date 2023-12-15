@@ -2,23 +2,28 @@ package com.swyg.picketbackend.auth.service;
 
 import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.auth.domain.RefreshToken;
-import com.swyg.picketbackend.auth.dto.MemberRequestDTO;
-import com.swyg.picketbackend.auth.dto.MemberResponseDTO;
-import com.swyg.picketbackend.auth.dto.TokenDTO;
-import com.swyg.picketbackend.auth.dto.TokenRequestDTO;
+import com.swyg.picketbackend.auth.dto.*;
 import com.swyg.picketbackend.auth.jwt.TokenProvider;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
 import com.swyg.picketbackend.auth.repository.RefreshTokenRepository;
+import com.swyg.picketbackend.auth.util.SecurityUtil;
+import com.swyg.picketbackend.global.exception.CustomException;
+import com.swyg.picketbackend.global.util.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class AuthService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
@@ -29,19 +34,19 @@ public class AuthService {
 
     // 회원 가입 서비스
     @Transactional
-    public MemberResponseDTO signup(MemberRequestDTO memberRequestDto) { 
+    public void signup(MemberRequestDTO memberRequestDto) {  // TODO: MemberResponseDTO 가 아닌 성공 코드 반환으로 변환
         if (memberRepository.existsByEmail(memberRequestDto.getEmail())) {
-            throw new RuntimeException("이미 가입되어 있는 유저입니다");
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL); // throw 이미 존재하는 유저 exception
         }
 
         Member member = memberRequestDto.toMember(passwordEncoder);
-        return MemberResponseDTO.of(memberRepository.save(member));
+        MemberResponseDTO.of(memberRepository.save(member));
     }
 
     @Transactional
-    public TokenDTO login(MemberRequestDTO memberRequestDto) {
+    public TokenDTO login(LoginDTO loginDTO) {
         // 1. Login email/Password 를 기반으로 AuthenticationToken 생성
-        UsernamePasswordAuthenticationToken authenticationToken = memberRequestDto.toAuthentication();
+        UsernamePasswordAuthenticationToken authenticationToken = loginDTO.toAuthentication();
 
         // 2. 실제로 검증 (사용자 비밀번호 체크) 이 이루어지는 부분
         //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
@@ -90,5 +95,21 @@ public class AuthService {
 
         // 토큰 발급
         return tokenDto;
+    }
+
+    @Transactional
+    public MemberResponseDTO findMember(Long id) {
+
+        Long currentMemberId = SecurityUtil.getCurrentMemberId(); // 현재 로그인 Id
+
+        if (!currentMemberId.equals(id)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS); // 로그인한 사용자가 아니면 접근 권한 없음 throw exception
+        }
+
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // entity -> dto
+        return MemberResponseDTO.of(member);
     }
 }

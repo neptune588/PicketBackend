@@ -59,7 +59,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/auth/**","/swagger-ui/**","/v3/api-docs/**","/swagger-ui.html").permitAll()
                                 .anyRequest().authenticated())
 
                 .with(new JwtSecurityConfig(tokenProvider), customizer -> {});
