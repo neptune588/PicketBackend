@@ -5,17 +5,20 @@ import com.swyg.picketbackend.auth.jwt.JwtAccessDeniedHandler;
 import com.swyg.picketbackend.auth.jwt.JwtAuthenticationEntryPoint;
 import com.swyg.picketbackend.auth.jwt.JwtSecurityConfig;
 import com.swyg.picketbackend.auth.jwt.TokenProvider;
+import com.swyg.picketbackend.auth.oauth.OAuthFailureHandler;
+import com.swyg.picketbackend.auth.oauth.OAuthSuccessHandler;
+import com.swyg.picketbackend.auth.service.PrincipalOauthDetailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
@@ -30,11 +33,14 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final PrincipalOauthDetailService principalOauthDetailService;
+    private final OAuthSuccessHandler oAuthSuccessHandler;
+    private final OAuthFailureHandler oAuthFailureHandler;
 
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
@@ -59,10 +65,19 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers("/auth/**","/swagger-ui/**","/v3/api-docs/**","/swagger-ui.html").permitAll()
+                                .requestMatchers("/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                                 .anyRequest().authenticated())
 
-                .with(new JwtSecurityConfig(tokenProvider), customizer -> {});
+                .oauth2Login(oauth2Login ->
+                        oauth2Login.userInfoEndpoint(userInfoEndpoint ->
+                                userInfoEndpoint.userService(principalOauthDetailService))
+                                .successHandler(oAuthSuccessHandler)
+                                .failureHandler(oAuthFailureHandler)
+                )
+
+
+                .with(new JwtSecurityConfig(tokenProvider), customizer -> {
+                });
         return http.build();
     }
 }

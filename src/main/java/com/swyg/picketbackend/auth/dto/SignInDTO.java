@@ -3,13 +3,14 @@ package com.swyg.picketbackend.auth.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginDTO {
+public class SignInDTO {
 
     @Schema(description = "로그인 이메일",example = "test@naver.com")
     String email;
@@ -18,8 +19,4 @@ public class LoginDTO {
     String password;
 
 
-    // email,password 을 기반으로 한 권한 추출
-    public UsernamePasswordAuthenticationToken toAuthentication() {
-        return new UsernamePasswordAuthenticationToken(email, password);
-    }
 }

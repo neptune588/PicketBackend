@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -13,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @RequiredArgsConstructor
+@Log4j2
 public class JwtFilter extends OncePerRequestFilter { // 모든 요청에 대해 딱 한번만 실행되도록 보장하는 역할의  Spring Security 제공 필터
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -24,6 +26,8 @@ public class JwtFilter extends OncePerRequestFilter { // 모든 요청에 대해
     // JWT 토큰의 인증 정보를 현재 쓰레드의 SecurityContext 에 저장하는 역할 수행
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+
+        log.info("doFilterInternal...");
 
         // 1. Request Header 에서 토큰을 꺼냄
         String jwt = resolveToken(request);

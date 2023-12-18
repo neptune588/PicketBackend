@@ -2,7 +2,9 @@ package com.swyg.picketbackend.auth.service;
 
 import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
+import com.swyg.picketbackend.auth.util.PrincipalDetails;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -13,9 +15,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
+
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailService implements UserDetailsService {
+@Log4j2
+public class PrincipalDetailService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
 
@@ -36,6 +40,4 @@ public class CustomUserDetailService implements UserDetailsService {
                 Collections.singleton(grantedAuthority)
         );
     }
-
-
 }

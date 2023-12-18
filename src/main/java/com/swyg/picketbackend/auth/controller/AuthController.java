@@ -3,11 +3,9 @@ package com.swyg.picketbackend.auth.controller;
 import com.swyg.picketbackend.auth.dto.*;
 import com.swyg.picketbackend.auth.service.AuthService;
 import com.swyg.picketbackend.global.dto.SuccessResponse;
+import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.SuccessCode;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +22,7 @@ public class AuthController {
 
     @Operation(summary = "회원가입", description = "회원 가입 API")
     @PostMapping("/signup")
-    public ResponseEntity<SuccessResponse> signup(@RequestBody MemberRequestDTO memberRequestDto) {
+    public ResponseEntity<SuccessResponse> signup(@RequestBody MemberRequestDTO memberRequestDto) throws CustomException {
         authService.signup(memberRequestDto);
         return SuccessResponse.success(SuccessCode.INSERT_SUCCESS);
     }
@@ -43,3 +41,4 @@ public class AuthController {
 
     
 }
+

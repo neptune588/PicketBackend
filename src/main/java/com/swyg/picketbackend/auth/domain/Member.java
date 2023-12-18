@@ -27,6 +27,8 @@ public class Member extends BaseEntity {
 
     private String imageUrl; // 프로필 이미지
 
+    private String providerId; // 소셜 로그인 구분 아이디
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -35,13 +37,14 @@ public class Member extends BaseEntity {
 
 
     @Builder
-    public Member(String email, String password, Role role,String nickname,String imageUrl,SocialType socialType) {
+    public Member(String email, String password, Role role,String nickname,String imageUrl,SocialType socialType,String providerId) {
         this.email = email;
         this.password = password;
         this.role = role;
         this.nickname =nickname;
         this.imageUrl = imageUrl;
         this.socialType = socialType;
+        this.providerId = providerId;
     }
 
 
