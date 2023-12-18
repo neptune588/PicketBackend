@@ -19,16 +19,14 @@ public class ErrorResponse {
 
     private final HttpStatus status;
     private final String message;
-    private final List<String> messages;
+    private final List<String> validErrors;
 
 
     public ErrorResponse(ErrorCode errorCode, List<String> messages) {
         this.status = errorCode.getStatus();
         this.message = errorCode.getMessage();
-        this.messages = messages;
+        this.validErrors = messages;
     }
-
-
 
     // RuntimeException 예외 처리 response 메서드
     public static ResponseEntity<ErrorResponse> error(CustomException e) {
@@ -53,7 +51,7 @@ public class ErrorResponse {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.builder()
                         .status(HttpStatus.BAD_REQUEST)
-                        .messages(errorMessages)
+                        .validErrors(errorMessages)
                         .build());
     }
 

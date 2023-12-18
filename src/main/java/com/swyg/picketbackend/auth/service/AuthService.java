@@ -6,6 +6,7 @@ import com.swyg.picketbackend.auth.dto.*;
 import com.swyg.picketbackend.auth.jwt.TokenProvider;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
 import com.swyg.picketbackend.auth.repository.RefreshTokenRepository;
+import com.swyg.picketbackend.auth.util.PrincipalDetails;
 import com.swyg.picketbackend.auth.util.SecurityUtil;
 import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.ErrorCode;
@@ -15,11 +16,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class AuthService {
 
     // 회원 가입 서비스
     @Transactional
-    public void signup(MemberRequestDTO memberRequestDto) {  // TODO: MemberResponseDTO 가 아닌 성공 코드 반환으로 변환
+    public void signup(MemberRequestDTO memberRequestDto) throws CustomException {  // TODO: MemberResponseDTO 가 아닌 성공 코드 반환으로 변환
         if (memberRepository.existsByEmail(memberRequestDto.getEmail())) {
             throw new CustomException(ErrorCode.DUPLICATE_EMAIL); // throw 이미 존재하는 유저 exception
         }
@@ -51,6 +50,7 @@ public class AuthService {
         // 2. 실제로 검증 (사용자 비밀번호 체크) 이 이루어지는 부분
         //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication);
@@ -98,9 +98,10 @@ public class AuthService {
     }
 
     @Transactional
-    public MemberResponseDTO findMember(Long id) {
+    public MemberResponseDTO findMember(Long id) throws CustomException {
 
-        Long currentMemberId = SecurityUtil.getCurrentMemberId(); // 현재 로그인 Id
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+
 
         if (!currentMemberId.equals(id)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS); // 로그인한 사용자가 아니면 접근 권한 없음 throw exception

@@ -1,6 +1,7 @@
 package com.swyg.picketbackend.auth.jwt;
 
 import com.swyg.picketbackend.auth.dto.TokenDTO;
+import com.swyg.picketbackend.auth.util.PrincipalDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -66,6 +67,7 @@ public class TokenProvider { // 유저 정보로 JWT 토큰을 만들거나 토�
                 .build();
     }
 
+
     public Authentication getAuthentication(String accessToken) {
 
         Claims claims = parseClaims(accessToken); // 토큰 복호화
@@ -80,11 +82,14 @@ public class TokenProvider { // 유저 정보로 JWT 토큰을 만들거나 토�
                         .map(SimpleGrantedAuthority::new)
                         .toList();
 
+        log.info("getAuthentication claims.getSubject() :"+claims.getSubject());
+
         // UserDetails 객체를 만들어서 Authentication 리턴
         UserDetails principal = new User(claims.getSubject(), "", authorities);
 
         return new UsernamePasswordAuthenticationToken(principal,"",authorities); // SecurityContext를 사용하기 위한 절차
     }
+
 
 
     public boolean validateToken(String token) { // 토큰 유효성 검증

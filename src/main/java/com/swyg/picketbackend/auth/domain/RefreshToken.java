@@ -1,5 +1,6 @@
 package com.swyg.picketbackend.auth.domain;
 
+import com.swyg.picketbackend.global.dto.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-public class RefreshToken {
+public class RefreshToken extends BaseEntity {
 
     @Id
     @Column(name = "rt_key")
