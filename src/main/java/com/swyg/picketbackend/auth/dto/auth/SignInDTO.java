@@ -1,4 +1,4 @@
-package com.swyg.picketbackend.auth.dto;
+package com.swyg.picketbackend.auth.dto.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

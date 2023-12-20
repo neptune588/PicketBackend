@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 public enum SuccessCode {
 
     //200 OK
+    SIGNUP_SUCCESS(HttpStatus.OK,"회원가입에 성공하였습니다."),
+
     SELECT_SUCCESS(HttpStatus.OK,"SELECT_SUCCESS"),
 
     UPDATE_SUCCESS(HttpStatus.OK,"UPDATE_SUCCESS"),

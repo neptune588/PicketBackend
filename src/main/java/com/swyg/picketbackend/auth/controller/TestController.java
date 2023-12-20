@@ -2,7 +2,7 @@ package com.swyg.picketbackend.auth.controller;
 
 
 
-import com.swyg.picketbackend.auth.dto.MemberResponseDTO;
+import com.swyg.picketbackend.auth.dto.auth.MemberResponseDTO;
 import com.swyg.picketbackend.auth.service.AuthService;
 import com.swyg.picketbackend.global.exception.CustomException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,7 +25,7 @@ public class TestController {
 
     @Operation(summary = "인증 테스트", description = "인증 성공하면 return")
     @GetMapping("/auth")
-    public String accessTest() {
+    public String accessTest() throws CustomException {
 
         return "토큰 인증 성공";
     }

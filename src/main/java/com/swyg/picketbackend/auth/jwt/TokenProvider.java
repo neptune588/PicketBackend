@@ -1,7 +1,8 @@
 package com.swyg.picketbackend.auth.jwt;
 
-import com.swyg.picketbackend.auth.dto.TokenDTO;
-import com.swyg.picketbackend.auth.util.PrincipalDetails;
+import com.swyg.picketbackend.auth.dto.auth.TokenDTO;
+import com.swyg.picketbackend.global.exception.CustomException;
+import com.swyg.picketbackend.global.util.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -97,15 +98,18 @@ public class TokenProvider { // 유저 정보로 JWT 토큰을 만들거나 토�
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("잘못된 JWT 서명입니다.");
+            //log.info("잘못된 JWT 서명입니다.");
+            throw  new CustomException(ErrorCode.INVAILD_SIGNAUTRE);
         } catch (ExpiredJwtException e) {
-            log.info("만료된 JWT 토큰입니다.");
+           // log.info("만료된 JWT 토큰입니다.");
+            throw  new CustomException(ErrorCode.EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
-            log.info("지원되지 않는 JWT 토큰입니다.");
+           // log.info("지원되지 않는 JWT 토큰입니다.");
+            throw new CustomException(ErrorCode.UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
-            log.info("JWT 토큰이 잘못되었습니다.");
+          //  log.info("JWT 토큰이 잘못되었습니다.");
+            throw new CustomException(ErrorCode.Illegal_TOKEN);
         }
-        return false;
     }
 
     private Claims parseClaims(String accessToken) { // 토큰 복호화 메서드

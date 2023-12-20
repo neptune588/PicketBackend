@@ -2,7 +2,7 @@ package com.swyg.picketbackend.auth.oauth;
 
 
 
-import com.swyg.picketbackend.auth.dto.LoginDTO;
+import com.swyg.picketbackend.auth.dto.auth.LoginDTO;
 import com.swyg.picketbackend.auth.service.AuthService;
 import com.swyg.picketbackend.auth.util.PrincipalDetails;
 import jakarta.servlet.ServletException;
@@ -16,8 +16,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -42,9 +40,9 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         String password = "google";
 
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-
-        securityContext.setAuthentication(null);
+//        SecurityContext securityContext = SecurityContextHolder.getContext();
+//
+//        securityContext.setAuthentication(null);
 
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.setEmail(email);
@@ -57,7 +55,7 @@ public class OAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         super.onAuthenticationSuccess(request, response, authentication);
     }
 
-    private ResponseEntity<String> sendLoginRequest(LoginDTO loginDTO) {
+    private ResponseEntity<String> sendLoginRequest(LoginDTO loginDTO) { // 로그인 요청
         String loginUrl = "http://localhost:8080/auth/login";
 
         // Set up headers

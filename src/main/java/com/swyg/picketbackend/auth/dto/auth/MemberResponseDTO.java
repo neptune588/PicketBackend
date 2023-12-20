@@ -1,15 +1,11 @@
-package com.swyg.picketbackend.auth.dto;
+package com.swyg.picketbackend.auth.dto.auth;
 
 
 import com.swyg.picketbackend.auth.domain.Member;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Optional;
 
 @Getter
 @AllArgsConstructor
@@ -29,6 +25,8 @@ public class MemberResponseDTO {
 
     private SocialType socialType;
 
+    private String providerId;
+
 
     // entity -> dto
     @Builder
@@ -37,7 +35,9 @@ public class MemberResponseDTO {
                 .email(member.getEmail())
                 .role(member.getRole())
                 .nickname(member.getNickname())
+                .role(member.getRole())
                 .imageUrl(member.getImageUrl())
+                .providerId(member.getProviderId())
                 .build();
 
     }

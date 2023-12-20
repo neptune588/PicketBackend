@@ -1,8 +1,8 @@
 package com.swyg.picketbackend.auth.domain;
 
 import com.swyg.picketbackend.global.dto.BaseEntity;
-import com.swyg.picketbackend.auth.dto.Role;
-import com.swyg.picketbackend.auth.dto.SocialType;
+import com.swyg.picketbackend.auth.dto.auth.Role;
+import com.swyg.picketbackend.auth.dto.auth.SocialType;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,14 +37,19 @@ public class Member extends BaseEntity {
 
 
     @Builder
-    public Member(String email, String password, Role role,String nickname,String imageUrl,SocialType socialType,String providerId) {
+    public Member(String email, String password, Role role, String nickname, String imageUrl, SocialType socialType, String providerId) {
         this.email = email;
         this.password = password;
         this.role = role;
-        this.nickname =nickname;
+        this.nickname = nickname;
         this.imageUrl = imageUrl;
         this.socialType = socialType;
         this.providerId = providerId;
+    }
+    
+    // 비밀번호 변경 메서드
+    public void modifyPassword(String password) {
+        this.password = password;
     }
 
 

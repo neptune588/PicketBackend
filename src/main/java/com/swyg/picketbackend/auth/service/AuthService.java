@@ -2,11 +2,10 @@ package com.swyg.picketbackend.auth.service;
 
 import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.auth.domain.RefreshToken;
-import com.swyg.picketbackend.auth.dto.*;
+import com.swyg.picketbackend.auth.dto.auth.*;
 import com.swyg.picketbackend.auth.jwt.TokenProvider;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
 import com.swyg.picketbackend.auth.repository.RefreshTokenRepository;
-import com.swyg.picketbackend.auth.util.PrincipalDetails;
 import com.swyg.picketbackend.auth.util.SecurityUtil;
 import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.ErrorCode;
@@ -16,7 +15,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,21 +32,26 @@ public class AuthService {
     // 회원 가입 서비스
     @Transactional
     public void signup(MemberRequestDTO memberRequestDto) throws CustomException {  // TODO: MemberResponseDTO 가 아닌 성공 코드 반환으로 변환
-        if (memberRepository.existsByEmail(memberRequestDto.getEmail())) {
-            throw new CustomException(ErrorCode.DUPLICATE_EMAIL); // throw 이미 존재하는 유저 exception
+        if (memberRepository.existsByEmail(memberRequestDto.getEmail())) { // 이미 존재하는 유저인지 check
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+        }
+
+        if(memberRepository.existsByNickname(memberRequestDto.getNickname())){ // 닉네임 중복 check
+            throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
         }
 
         Member member = memberRequestDto.toMember(passwordEncoder);
         MemberResponseDTO.of(memberRepository.save(member));
     }
-
+    
+    // 로그인 서비스
     @Transactional
     public TokenDTO login(LoginDTO loginDTO) {
         // 1. Login email/Password 를 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = loginDTO.toAuthentication();
 
         // 2. 실제로 검증 (사용자 비밀번호 체크) 이 이루어지는 부분
-        //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
+        //    authenticate 메서드가 실행이 될 때 PrincipalUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
 
@@ -98,7 +101,7 @@ public class AuthService {
     }
 
     @Transactional
-    public MemberResponseDTO findMember(Long id) throws CustomException {
+    public MemberResponseDTO findMember(Long id)  {
 
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
 

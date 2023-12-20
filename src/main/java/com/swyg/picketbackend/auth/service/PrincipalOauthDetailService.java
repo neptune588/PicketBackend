@@ -1,15 +1,14 @@
 package com.swyg.picketbackend.auth.service;
 
 import com.swyg.picketbackend.auth.domain.Member;
-import com.swyg.picketbackend.auth.dto.Role;
-import com.swyg.picketbackend.auth.dto.SocialType;
+import com.swyg.picketbackend.auth.dto.auth.Role;
+import com.swyg.picketbackend.auth.dto.auth.SocialType;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
 import com.swyg.picketbackend.auth.util.PrincipalDetails;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -26,7 +25,7 @@ public class PrincipalOauthDetailService extends DefaultOAuth2UserService { // 0
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
 
     // 구글로부터 받은 userRequest 데이터에 대한 후처리되는 함수
     @Transactional
@@ -38,11 +37,11 @@ public class PrincipalOauthDetailService extends DefaultOAuth2UserService { // 0
         OAuth2User oAuth2User = super.loadUser(userRequest); // 소셜 로그인 정보 받아 옴
 
         // parameter setting
-        String provider = userRequest.getClientRegistration().getClientId();
-        String providerId = oAuth2User.getAttribute("sub");
+        String provider = userRequest.getClientRegistration().getRegistrationId();
+        String nickname = oAuth2User.getAttribute("sub");
         String email = oAuth2User.getAttribute("email");
         String imageUrl = oAuth2User.getAttribute("picture");
-        String nickname = provider + "_" + providerId;
+        String providerId = provider + "_" + nickname;
         String password = "google";
         String encPassword = passwordEncoder.encode("google");
 

@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
@@ -55,4 +56,14 @@ public class ErrorResponse {
                         .build());
     }
 
+
+    // UserNameNotFound 예외 처리 response 메서드
+    public static ResponseEntity<ErrorResponse> userNameNotFoundError(UsernameNotFoundException e) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.builder()
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .message(e.getMessage())
+                        .build());
+    }
 }
