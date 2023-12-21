@@ -9,6 +9,8 @@ import lombok.*;
 @Builder
 public class TokenDTO {
 
+    private Long memberId;
+
     private String grantType;
 
     private String accessToken;

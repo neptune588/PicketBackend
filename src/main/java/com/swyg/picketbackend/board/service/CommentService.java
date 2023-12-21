@@ -1,9 +1,9 @@
-package com.swyg.picketbackend.service;
+package com.swyg.picketbackend.board.service;
 
-import com.swyg.picketbackend.Entity.Board;
-import com.swyg.picketbackend.Entity.Comment;
-import com.swyg.picketbackend.repository.BoardRepository;
-import com.swyg.picketbackend.repository.CommentRepository;
+import com.swyg.picketbackend.board.Entity.Board;
+import com.swyg.picketbackend.board.Entity.Comment;
+import com.swyg.picketbackend.board.repository.BoardRepository;
+import com.swyg.picketbackend.board.repository.CommentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

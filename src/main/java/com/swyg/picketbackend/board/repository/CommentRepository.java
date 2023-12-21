@@ -1,6 +1,6 @@
-package com.swyg.picketbackend.repository;
+package com.swyg.picketbackend.board.repository;
 
-import com.swyg.picketbackend.Entity.Comment;
+import com.swyg.picketbackend.board.Entity.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

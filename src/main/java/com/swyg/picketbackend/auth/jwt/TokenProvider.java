@@ -65,6 +65,7 @@ public class TokenProvider { // 유저 정보로 JWT 토큰을 만들거나 토�
                 .accessToken(accessToken)
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .refreshToken(refreshToken)
+                .memberId(Long.valueOf(authentication.getName()))
                 .build();
     }
 

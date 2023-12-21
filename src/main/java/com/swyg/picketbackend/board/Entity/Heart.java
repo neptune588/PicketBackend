@@ -1,4 +1,4 @@
-package com.swyg.picketbackend.Entity;
+package com.swyg.picketbackend.board.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.swyg.picketbackend.auth.domain.Member;

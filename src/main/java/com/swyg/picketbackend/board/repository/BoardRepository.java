@@ -1,6 +1,6 @@
-package com.swyg.picketbackend.repository;
+package com.swyg.picketbackend.board.repository;
 
-import com.swyg.picketbackend.Entity.Board;
+import com.swyg.picketbackend.board.Entity.Board;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +14,8 @@ import java.util.List;
 public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query(value = "SELECT * FROM board WHERE writer = :writer", nativeQuery = true)
     List<Board> findAllByWriter(@Param("writer") String writer);
+
+    List<Board> findAllByMemberId(Long memberId);
 
     @Transactional // 일련의 작업 하나로 묶어 처리
     @Modifying // 영속성 가지지 않고 바로 DB에 저장

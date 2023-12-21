@@ -1,7 +1,7 @@
-package com.swyg.picketbackend.controller;
+package com.swyg.picketbackend.board.controller;
 
-import com.swyg.picketbackend.Entity.Comment;
-import com.swyg.picketbackend.service.CommentService;
+import com.swyg.picketbackend.board.Entity.Comment;
+import com.swyg.picketbackend.board.service.CommentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -1,8 +1,8 @@
-package com.swyg.picketbackend.controller;
+package com.swyg.picketbackend.board.controller;
 
-import com.swyg.picketbackend.Entity.Heart;
+import com.swyg.picketbackend.board.Entity.Heart;
 import com.swyg.picketbackend.auth.domain.Member;
-import com.swyg.picketbackend.service.HeartService;
+import com.swyg.picketbackend.board.service.HeartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

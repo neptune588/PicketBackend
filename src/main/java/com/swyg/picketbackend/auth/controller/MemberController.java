@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "MemberController",description = "인증 관련 API")
+
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor
@@ -28,13 +28,5 @@ public class MemberController {
         memberService.passwordModify(putPasswordDTO);
         return SuccessResponse.success(SuccessCode.SIGNUP_SUCCESS);
     }
-
-    @Operation(summary = "가입 이메일로 비밀번호 초기화", description = "비밀번호 찾기 API")
-    @PostMapping("/reset-password")
-    public ResponseEntity<SuccessResponse> modifyMember(@RequestBody PutPasswordDTO putPasswordDTO) throws CustomException {
-        memberService.passwordModify(putPasswordDTO);
-        return SuccessResponse.success(SuccessCode.SIGNUP_SUCCESS);
-    }
-
 
 }

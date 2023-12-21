@@ -1,5 +1,6 @@
 package com.swyg.picketbackend.auth.domain;
 
+import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.global.dto.BaseEntity;
 import com.swyg.picketbackend.auth.dto.auth.Role;
 import com.swyg.picketbackend.auth.dto.auth.SocialType;
@@ -8,11 +9,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Entity
 @NoArgsConstructor
 public class Member extends BaseEntity {
-
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,9 +38,13 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private SocialType socialType;
 
+    @OneToMany(mappedBy ="member",cascade = CascadeType.ALL,orphanRemoval = true) // 회원이 삭제되면 삭제 회원이 작성한 게시물도 삭제
+    private List<Board> boardList = new ArrayList<>();
+
 
     @Builder
-    public Member(String email, String password, Role role, String nickname, String imageUrl, SocialType socialType, String providerId) {
+    public Member(String email, String password, Role role, String nickname, String imageUrl, SocialType socialType, String providerId
+    ,List<Board> boardList) {
         this.email = email;
         this.password = password;
         this.role = role;
@@ -45,10 +52,18 @@ public class Member extends BaseEntity {
         this.imageUrl = imageUrl;
         this.socialType = socialType;
         this.providerId = providerId;
+        this.boardList = boardList;
     }
-    
+
+
+    public static Member setId(Long id){  // 게시글 CRUD을 위한 회원 번호 set
+        Member member = new Member();
+        member.id = id;
+        return member;
+    }
+
     // 비밀번호 변경 메서드
-    public void modifyPassword(String password) {
+    public  void modifyPassword(String password) {
         this.password = password;
     }
 

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -30,12 +31,6 @@ public class SecurityConfig {
     private final CorsFilter corsFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
-
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -59,7 +54,10 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers("/auth/**","/swagger-ui/**","/v3/api-docs/**","/swagger-ui.html", "/board/**").permitAll()
+                                .requestMatchers("/auth/**","/board/**",
+                                        "/swagger-ui/**","/v3/api-docs/**","/swagger-ui.html").permitAll()
+                                .requestMatchers("/board/myposts/**").authenticated()
+                                .requestMatchers(HttpMethod.POST,"/board/**").authenticated()
                                 .anyRequest().authenticated())
 
                 .with(new JwtSecurityConfig(tokenProvider), customizer -> {});

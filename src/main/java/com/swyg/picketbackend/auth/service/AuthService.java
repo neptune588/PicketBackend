@@ -6,6 +6,7 @@ import com.swyg.picketbackend.auth.dto.auth.*;
 import com.swyg.picketbackend.auth.jwt.TokenProvider;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
 import com.swyg.picketbackend.auth.repository.RefreshTokenRepository;
+import com.swyg.picketbackend.auth.util.PrincipalDetails;
 import com.swyg.picketbackend.auth.util.SecurityUtil;
 import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.ErrorCode;
@@ -15,6 +16,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -54,9 +57,11 @@ public class AuthService {
         //    authenticate 메서드가 실행이 될 때 PrincipalUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
+        log.info("authentication.getName() : " + authentication.getName());
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication);
+
 
         // 4. RefreshToken 저장
         RefreshToken refreshToken = RefreshToken.builder()
@@ -103,7 +108,7 @@ public class AuthService {
     @Transactional
     public MemberResponseDTO findMember(Long id)  {
 
-        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+        Long currentMemberId = SecurityUtil.getCurrentMemberId(); // 현재 로그인한 유저 아이디 조회
 
 
         if (!currentMemberId.equals(id)) {

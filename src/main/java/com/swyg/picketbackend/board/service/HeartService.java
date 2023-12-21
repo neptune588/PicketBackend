@@ -1,10 +1,10 @@
-package com.swyg.picketbackend.service;
+package com.swyg.picketbackend.board.service;
 
-import com.swyg.picketbackend.Entity.Board;
-import com.swyg.picketbackend.Entity.Heart;
+import com.swyg.picketbackend.board.Entity.Board;
+import com.swyg.picketbackend.board.Entity.Heart;
 import com.swyg.picketbackend.auth.domain.Member;
-import com.swyg.picketbackend.repository.BoardRepository;
-import com.swyg.picketbackend.repository.HeartRepository;
+import com.swyg.picketbackend.board.repository.BoardRepository;
+import com.swyg.picketbackend.board.repository.HeartRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
