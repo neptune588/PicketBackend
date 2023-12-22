@@ -3,8 +3,7 @@ package com.swyg.picketbackend.auth.service;
 import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.auth.domain.RefreshToken;
 import com.swyg.picketbackend.auth.dto.auth.req.LoginDTO;
-import com.swyg.picketbackend.auth.dto.auth.req.MemberRequestDTO;
-import com.swyg.picketbackend.auth.dto.auth.req.NicknameRequestDTO;
+import com.swyg.picketbackend.auth.dto.auth.req.SignupRequestDTO;
 import com.swyg.picketbackend.auth.dto.auth.req.TokenRequestDTO;
 import com.swyg.picketbackend.auth.dto.auth.res.SignupResponseDTO;
 import com.swyg.picketbackend.auth.dto.auth.res.TokenResponseDTO;
@@ -34,33 +33,40 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    // 회원 가입 서비스
-    @Transactional
-    public SignupResponseDTO signup(MemberRequestDTO memberRequestDTO) throws CustomException {  // TODO: MemberResponseDTO 가 아닌 성공 코드 반환으로 변환
-        if (memberRepository.existsByEmail(memberRequestDTO.getEmail())) { // 이미 존재하는 유저인지 check
+
+    // 회원 가입 이메일 중복 검사
+    public void checkEmail(String email) {
+        boolean result = memberRepository.existsByEmail(email);
+        log.info(result);
+        if (memberRepository.existsByEmail(email)) {
             throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
-
-        Member member = memberRequestDTO.toMember(passwordEncoder);
-        return SignupResponseDTO.of(memberRepository.save(member));
     }
-    
-    // 회원 가입 닉네임 설정 서비스
-    public void nickNameAdd(NicknameRequestDTO nicknameRequestDTO) {
 
-        Member target = memberRepository.findByEmail(nicknameRequestDTO.getEmail())
-                .orElseThrow(()->new CustomException(ErrorCode.USER_NOT_FOUND));
+    // 회원 가입 닉네임 중복 검사
+    public void checkNickname(String nickname) {
+        if (memberRepository.existsByNickname(nickname)) {
+            throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
+        }
+    }
 
-        if (memberRepository.existsByNickname(nicknameRequestDTO.getNickname())) { // 이미 존재하는 유저인지 check
+
+    // 회원 가입 서비스
+    @Transactional
+    public void signup(SignupRequestDTO signupRequestDTO) throws CustomException {
+        if (memberRepository.existsByEmail(signupRequestDTO.getEmail())) {
+            throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
+        }
+        if (memberRepository.existsByNickname(signupRequestDTO.getNickname())) {
             throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
         }
 
-        target.setNickname(nicknameRequestDTO.getNickname());
+        Member member = signupRequestDTO.toMember(passwordEncoder);
 
-        memberRepository.save(target); // dirty checking
-
+        memberRepository.save(member);
     }
-    
+
+
     // 로그인 서비스
     @Transactional
     public TokenResponseDTO login(LoginDTO loginDTO) {
@@ -120,7 +126,7 @@ public class AuthService {
     }
 
     @Transactional
-    public SignupResponseDTO findMember(Long id)  {
+    public SignupResponseDTO findMember(Long id) {
 
         Long currentMemberId = SecurityUtil.getCurrentMemberId(); // 현재 로그인한 유저 아이디 조회
 
@@ -135,5 +141,6 @@ public class AuthService {
         // entity -> dto
         return SignupResponseDTO.of(member);
     }
-    
+
+
 }

@@ -6,7 +6,9 @@ import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.board.Entity.QBoard;
 import com.swyg.picketbackend.board.dto.req.BoardListRequestDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,7 +19,6 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-
     @Override
     public Slice<Board> findByList(BoardListRequestDTO boardListRequestDTO) {
         QBoard board = QBoard.board;
@@ -27,7 +28,6 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository {
         List<String> categoryList = boardListRequestDTO.getCategoryList();  // 해당 카테고리 목록
         int page = boardListRequestDTO.getPage(); // 페이지 번호
         int size = boardListRequestDTO.getSize(); // 페이지 사이즈
-
 
         // 카테고리 조건
         BooleanExpression categoryExpression = board.categoryList.any().name.in(boardListRequestDTO.getCategoryList());
@@ -44,12 +44,20 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository {
             condition = keywordExpression;
         }
 
-//        return jpaQueryFactory.selectFrom(board) //  검색어 있을 시
-//                .where(
-//                        board.categoryList.any().name.in(boardListRequestDTO.getCategoryList()),
-//                        board.title.containsIgnoreCase(boardListRequestDTO.getKeyword()))
-//                .fetch();
-        return null;
+        List<Board> boardList = jpaQueryFactory
+                .selectFrom(board)
+                .where(condition)
+                .offset((long) page * size)
+                .limit(size + 1) // 1개 더 가져와서 hasNext 여부 확인
+                .fetch();
+
+        boolean hasNext = boardList.size() > size;
+
+        if(hasNext){
+            boardList.remove(size);
+        }
+
+        return new SliceImpl<>(boardList, PageRequest.of(page,size),hasNext);
 
     }
 }

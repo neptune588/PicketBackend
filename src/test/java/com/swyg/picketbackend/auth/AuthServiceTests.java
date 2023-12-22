@@ -1,11 +1,6 @@
 package com.swyg.picketbackend.auth;
-
-
-import com.swyg.picketbackend.auth.dto.auth.req.MemberRequestDTO;
-import com.swyg.picketbackend.auth.dto.auth.res.SignupResponseDTO;
 import com.swyg.picketbackend.auth.service.AuthService;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,19 +15,16 @@ public class AuthServiceTests {
     private AuthService authService;
 
     @Test
-    @DisplayName("회원 가입 서비스 테스트")
-    public void signupTests() {
+    @DisplayName("이메일 중복 체크 서비스 테스트")
+    public void  checkEmail() {
         // given
-        MemberRequestDTO memberRequestDTO = MemberRequestDTO.builder()
-                .email("jiwoong423@naver.com")
-                .password("password")
-                .build();
+        String email = "jiwoong42@naver.com";
 
         // when
-        SignupResponseDTO signupResponseDTO = authService.signup(memberRequestDTO);
+        authService.checkEmail(email);
 
         // then
-        log.info(signupResponseDTO.getEmail());
+
 
     }
 
@@ -43,7 +35,7 @@ public class AuthServiceTests {
         String email = "test1@naver.com";
         String nickname = "wooni";
         // when
-        authService.nickNameAdd(email,nickname);
+
         // then
 
     }
