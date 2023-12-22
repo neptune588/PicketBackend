@@ -2,7 +2,7 @@ package com.swyg.picketbackend.auth.controller;
 
 
 
-import com.swyg.picketbackend.auth.dto.auth.res.MemberResponseDTO;
+import com.swyg.picketbackend.auth.dto.auth.res.SignupResponseDTO;
 import com.swyg.picketbackend.auth.service.AuthService;
 import com.swyg.picketbackend.global.exception.CustomException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +32,7 @@ public class TestController {
 
     @Operation(summary = "권한 테스트", description = "본인 권한 url 접근 권한")
     @GetMapping("/auth/{memberId}")
-    public MemberResponseDTO accessMemberTest(@PathVariable("memberId") Long memberId) throws CustomException {
+    public SignupResponseDTO accessMemberTest(@PathVariable("memberId") Long memberId) throws CustomException {
 
         return authService.findMember(memberId);
     }

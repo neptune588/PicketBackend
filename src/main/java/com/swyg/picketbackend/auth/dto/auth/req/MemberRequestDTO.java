@@ -13,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class MemberRequestDTO {
@@ -26,16 +27,12 @@ public class MemberRequestDTO {
     @Schema(description = "가입 비밀번호",example = "password")
     private String password;
 
-    @Schema(description = "가입 닉네임",example = "nickname")
-    private String nickname;
-
     // dto -> Entity
     public Member toMember(PasswordEncoder passwordEncoder) {
         return Member.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
                 .role(Role.ROLE_USER)
-                .nickname(nickname)
                 .providerId("none")
                 .socialType(SocialType.GENERAL)
                 .build();

@@ -6,6 +6,7 @@ import com.swyg.picketbackend.auth.util.SecurityUtil;
 import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
+import com.swyg.picketbackend.board.dto.req.BoardListRequestDTO;
 import com.swyg.picketbackend.board.dto.req.BoardRequestDTO;
 import com.swyg.picketbackend.board.dto.res.BoardResponseDTO;
 import com.swyg.picketbackend.board.dto.req.PatchBoardDTO;
@@ -16,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,15 +56,9 @@ public class BoardService {
     }
 
     @Transactional
-    public List<BoardResponseDTO> getBoardList() { // TODO : 모든 버킷리스트 조회(무한 스크롤 구현 필요)
-        List<Board> boardList = boardRepository.findAll();
-        return BoardResponseDTO.toDTOList(boardList);
-    }
-
-    @Transactional
-    public List<BoardResponseDTO> getSearchedBoardList(String searchKeyword) { // TODO : 검색 조건 버킷리스트 조회(무한 스크롤 구현 필요)
-        List<Board> boardSearchList = boardRepository.findByKeywordList(searchKeyword);
-        return BoardResponseDTO.toDTOList(boardSearchList);
+    public Slice<BoardResponseDTO> findList(BoardListRequestDTO boardListRequestDTO) { // TODO : 검색 조건 버킷리스트 조회(무한 스크롤 구현 필요)
+        Slice<Board> boardSearchList = boardRepository.findByList(boardListRequestDTO);
+        return null;
     }
 
     @Transactional
@@ -143,20 +139,20 @@ public class BoardService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_UPDATE);
         }
 
-        target.update(patchBoardDTO.getTitle(),patchBoardDTO.getContent(),
-                patchBoardDTO.getDeadline(),patchBoardDTO.getFilename(), patchBoardDTO.getFilepath()); // 버킷 수정 정보 set
+        target.update(patchBoardDTO.getTitle(), patchBoardDTO.getContent(),
+                patchBoardDTO.getDeadline(), patchBoardDTO.getFilename(), patchBoardDTO.getFilepath()); // 버킷 수정 정보 set
 
-        Board updateEntity =boardRepository.save(target); // dirty checking
+        Board updateEntity = boardRepository.save(target); // dirty checking
 
         // entity -> dto
-        return  BoardResponseDTO.from(updateEntity);
+        return BoardResponseDTO.from(updateEntity);
     }
 
 
     public void delete(Long boardId) {
         //1. 대상 찾기
         Board target = boardRepository.findById(boardId)
-                .orElseThrow(()-> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
 
         // 2. 버킷 작성 회원 인증 확인
         Long currentMemberId = SecurityUtil.getCurrentMemberId();

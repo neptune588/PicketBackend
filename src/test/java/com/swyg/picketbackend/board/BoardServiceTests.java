@@ -18,7 +18,7 @@ public class BoardServiceTests {
     private BoardService boardService;
 
 
-    @Test
+    /*@Test
     public void getSearchedBoardListTests() {
 
         // given
@@ -31,7 +31,7 @@ public class BoardServiceTests {
         for(BoardResponseDTO boardResponseDTO:resultList){
             log.info(boardResponseDTO.toString());
         }
-    }
+    }*/
 
 
 }

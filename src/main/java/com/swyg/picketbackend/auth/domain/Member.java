@@ -70,6 +70,12 @@ public class Member extends BaseEntity {
     public void modifyPassword(String password) {
         this.password = password;
     }
+    
+    // 닉네임 설정 메서드
+    public void setNickname(String nickname){
+        this.nickname = nickname;
+    }
+
 
 
 }

@@ -54,13 +54,15 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorizeHttpRequests ->
                         authorizeHttpRequests
-                                .requestMatchers("/auth/**","/board/**",
-                                        "/swagger-ui/**","/v3/api-docs/**","/swagger-ui.html").permitAll()
+                                .requestMatchers("/auth/**",
+                                        "/board/**",
+                                        "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                                 .requestMatchers("/board/myposts/**").authenticated()
-                                .requestMatchers(HttpMethod.POST,"/board/**").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/board/**").authenticated()
                                 .anyRequest().authenticated())
 
-                .with(new JwtSecurityConfig(tokenProvider), customizer -> {});
+                .with(new JwtSecurityConfig(tokenProvider), customizer -> {
+                });
         return http.build();
     }
 }

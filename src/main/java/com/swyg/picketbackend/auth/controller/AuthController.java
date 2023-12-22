@@ -2,6 +2,8 @@ package com.swyg.picketbackend.auth.controller;
 
 import com.swyg.picketbackend.auth.dto.auth.req.LoginDTO;
 import com.swyg.picketbackend.auth.dto.auth.req.MemberRequestDTO;
+import com.swyg.picketbackend.auth.dto.auth.req.NicknameRequestDTO;
+import com.swyg.picketbackend.auth.dto.auth.res.SignupResponseDTO;
 import com.swyg.picketbackend.auth.dto.auth.res.TokenResponseDTO;
 import com.swyg.picketbackend.auth.dto.auth.req.TokenRequestDTO;
 import com.swyg.picketbackend.auth.service.AuthService;
@@ -14,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "AuthController",description = "인증 관련 API")
+@Tag(name = "AuthController", description = "인증 관련 API")
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -24,8 +26,14 @@ public class AuthController {
 
     @Operation(summary = "회원가입", description = "회원 가입 API")
     @PostMapping("/signup")
-    public ResponseEntity<SuccessResponse> signup(@RequestBody MemberRequestDTO memberRequestDTO) throws CustomException {
-        authService.signup(memberRequestDTO);
+    public ResponseEntity<SignupResponseDTO> signup(@RequestBody MemberRequestDTO memberRequestDTO) throws CustomException {
+        return ResponseEntity.ok(authService.signup(memberRequestDTO));
+    }
+
+    @Operation(summary = "회원가입 닉네임 설정", description = "회원 가입 닉네임 API")
+    @PostMapping("/signup/nickname")
+    public ResponseEntity<SuccessResponse> signupAddNickname(@RequestBody NicknameRequestDTO nicknameRequestDTO) throws CustomException {
+        authService.nickNameAdd(nicknameRequestDTO);
         return SuccessResponse.success(SuccessCode.SIGNUP_SUCCESS);
     }
 
@@ -41,6 +49,6 @@ public class AuthController {
         return ResponseEntity.ok(authService.reissue(tokenRequestDto));
     }
 
-    
+
 }
 
