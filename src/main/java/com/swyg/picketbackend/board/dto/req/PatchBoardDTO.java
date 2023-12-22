@@ -1,11 +1,15 @@
-package com.swyg.picketbackend.board.dto;
+package com.swyg.picketbackend.board.dto.req;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.swyg.picketbackend.board.Entity.Board;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+
 
 @Getter
 @AllArgsConstructor
@@ -20,7 +24,8 @@ public class PatchBoardDTO {
     private String content; // 게시글 내용
 
     @Schema(description = "종료 날짜",example = "deadline")
-    private String deadline; // 종료 날짜
+    @JsonFormat(shape = JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd",timezone = "Asia/Seoul")
+    private LocalDate deadline; // 종료 날짜
 
     @Schema(description = "",example = "filename")
     private String filename; // 파일 이름

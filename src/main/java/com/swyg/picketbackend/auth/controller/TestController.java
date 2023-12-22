@@ -2,7 +2,7 @@ package com.swyg.picketbackend.auth.controller;
 
 
 
-import com.swyg.picketbackend.auth.dto.auth.MemberResponseDTO;
+import com.swyg.picketbackend.auth.dto.auth.res.MemberResponseDTO;
 import com.swyg.picketbackend.auth.service.AuthService;
 import com.swyg.picketbackend.global.exception.CustomException;
 import io.swagger.v3.oas.annotations.Operation;

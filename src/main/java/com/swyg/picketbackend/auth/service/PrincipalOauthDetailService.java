@@ -1,8 +1,8 @@
 package com.swyg.picketbackend.auth.service;
 
 import com.swyg.picketbackend.auth.domain.Member;
-import com.swyg.picketbackend.auth.dto.auth.Role;
-import com.swyg.picketbackend.auth.dto.auth.SocialType;
+import com.swyg.picketbackend.auth.util.Role;
+import com.swyg.picketbackend.auth.util.SocialType;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
 import com.swyg.picketbackend.auth.util.PrincipalDetails;
 import jakarta.transaction.Transactional;

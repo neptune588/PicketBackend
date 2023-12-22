@@ -1,9 +1,8 @@
 package com.swyg.picketbackend.board.controller;
 
-import com.swyg.picketbackend.board.Entity.Board;
-import com.swyg.picketbackend.board.dto.BoardRequestDTO;
-import com.swyg.picketbackend.board.dto.BoardResponseDTO;
-import com.swyg.picketbackend.board.dto.PatchBoardDTO;
+import com.swyg.picketbackend.board.dto.req.BoardRequestDTO;
+import com.swyg.picketbackend.board.dto.res.BoardResponseDTO;
+import com.swyg.picketbackend.board.dto.req.PatchBoardDTO;
 import com.swyg.picketbackend.board.service.BoardService;
 import com.swyg.picketbackend.global.dto.SuccessResponse;
 import com.swyg.picketbackend.global.util.SuccessCode;
@@ -11,8 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,20 +34,20 @@ public class BoardController {
 
     @Operation(summary = "전체 버킷리스트 조회", description = "전체 버킷리스트 조회 api")
     @GetMapping("/list") // 전체 버킷 리스트 조회
-    public List<BoardResponseDTO> getBoardList(String searchKeyWord) {
-        if (searchKeyWord == null) { // 검색 키워드 없을 때
+    public List<BoardResponseDTO> getBoardList(String searchKeyword) {
+        if (searchKeyword == null) { // 검색 키워드 없을 때
             return boardService.getBoardList();
         } else { // 검색 키워드 있을 때
-            return boardService.getSearchedBoardList(searchKeyWord);
+            return boardService.getSearchedBoardList(searchKeyword);
         }
     }
 
-
-    @Operation(summary = "버킷리스트 상세보기", description = "버킷리스트 상세보기 url에 boardId 필요")
-    @GetMapping("/{boardId}") // 버킷 리스트 상세보기
+    @Operation(summary = "버킷리스트 상세보기", description = "버킷리스트 상세보기 url에 boardId 필요") 
+    @GetMapping("/{boardId}") // TODO : 버킷 리스트 상세보기 댓글까지 가져오기
     public BoardResponseDTO GetBoardDetail(@PathVariable Long boardId) {
         return boardService.getBoardDetail(boardId);
     }
+
 
     @Operation(summary = "버킷리스트 작성", description = "버킷리스트 작성 API")
     @PostMapping() // 버킷리스트 작성
@@ -68,6 +65,7 @@ public class BoardController {
         return SuccessResponse.success(SuccessCode.INSERT_SUCCESS);
     }
 
+    @Operation(summary = "버킷리스트 수정", description = "버킷리스트 수정 API")
     @PatchMapping("/{boardId}") // 버킷리스트 수정
     public ResponseEntity<SuccessResponse> update(@PathVariable Long boardId, @RequestBody PatchBoardDTO patchBoardDTO) {
         boardService.update(boardId,patchBoardDTO);

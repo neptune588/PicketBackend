@@ -1,7 +1,9 @@
-package com.swyg.picketbackend.auth.dto.auth;
+package com.swyg.picketbackend.auth.dto.auth.req;
 
 
 import com.swyg.picketbackend.auth.domain.Member;
+import com.swyg.picketbackend.auth.util.Role;
+import com.swyg.picketbackend.auth.util.SocialType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -27,8 +29,6 @@ public class MemberRequestDTO {
     @Schema(description = "가입 닉네임",example = "nickname")
     private String nickname;
 
-    private String imageUrl;
-
     // dto -> Entity
     public Member toMember(PasswordEncoder passwordEncoder) {
         return Member.builder()
@@ -36,7 +36,6 @@ public class MemberRequestDTO {
                 .password(passwordEncoder.encode(password))
                 .role(Role.ROLE_USER)
                 .nickname(nickname)
-                .imageUrl(imageUrl)
                 .providerId("none")
                 .socialType(SocialType.GENERAL)
                 .build();

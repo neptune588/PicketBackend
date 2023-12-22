@@ -1,7 +1,9 @@
-package com.swyg.picketbackend.auth.dto.auth;
+package com.swyg.picketbackend.auth.dto.auth.res;
 
 
 import com.swyg.picketbackend.auth.domain.Member;
+import com.swyg.picketbackend.auth.util.Role;
+import com.swyg.picketbackend.auth.util.SocialType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,7 +31,6 @@ public class MemberResponseDTO {
 
 
     // entity -> dto
-    @Builder
     public static MemberResponseDTO of(Member member) {
         return MemberResponseDTO.builder()
                 .email(member.getEmail())

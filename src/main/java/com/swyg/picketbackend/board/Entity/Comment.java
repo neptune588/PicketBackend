@@ -1,19 +1,21 @@
 package com.swyg.picketbackend.board.Entity;
 
+import com.swyg.picketbackend.auth.domain.Member;
+import com.swyg.picketbackend.global.dto.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 
-@Slf4j
+@Log4j2
 @Entity
 @Getter
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
+public class Comment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,20 +25,12 @@ public class Comment {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    private String nickname;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     private String comment;
 
-    public static Comment writeComment(Comment comment, Board board) {
-        //예외 처리
-        if(comment.getId() != null)
-            throw new IllegalArgumentException("댓글 생성 실패! 댓글의 id가 없어야합니다.");
 
-        return new Comment(
-                null,
-                board,
-                comment.getNickname(),
-                comment.getComment()
-        );
-    }
+
 }

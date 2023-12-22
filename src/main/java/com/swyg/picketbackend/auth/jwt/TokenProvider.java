@@ -1,6 +1,6 @@
 package com.swyg.picketbackend.auth.jwt;
 
-import com.swyg.picketbackend.auth.dto.auth.TokenDTO;
+import com.swyg.picketbackend.auth.dto.auth.res.TokenResponseDTO;
 import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.ErrorCode;
 import io.jsonwebtoken.*;
@@ -37,7 +37,7 @@ public class TokenProvider { // 유저 정보로 JWT 토큰을 만들거나 토�
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenDTO generateTokenDto(Authentication authentication) {
+    public TokenResponseDTO generateTokenDto(Authentication authentication) {
         // 권한들 가져오기
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -60,7 +60,7 @@ public class TokenProvider { // 유저 정보로 JWT 토큰을 만들거나 토�
                 .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
 
-        return TokenDTO.builder()
+        return TokenResponseDTO.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())

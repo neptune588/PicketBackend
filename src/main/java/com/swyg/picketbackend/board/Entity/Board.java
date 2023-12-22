@@ -4,10 +4,14 @@ import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.global.dto.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends BaseEntity {  // 생성날짜,수정날짜 자동 생성
 
     @Id
@@ -19,7 +23,8 @@ public class Board extends BaseEntity {  // 생성날짜,수정날짜 자동 생
     
     private String content; // 게시글 내용
 
-    private String deadline; // 종료 날짜
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate deadline; // 종료 날짜
 
     private Long heart; // 좋아요 수
 
@@ -33,10 +38,18 @@ public class Board extends BaseEntity {  // 생성날짜,수정날짜 자동 생
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @OneToMany(mappedBy = "board",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Comment> commentList = new ArrayList<>();
+
+    @ManyToMany(mappedBy = "boardList")
+    private List<Category> categoryList = new ArrayList<>();
+
+
+
 
     // dto -> entity
     @Builder
-    public Board(Member member,String title,String content,String deadline,Long heart,Long scrap,String filename,String filepath){
+    public Board(Member member,String title,String content,LocalDate deadline,Long heart,Long scrap,String filename,String filepath){
         this.member = member;
         this.title = title;
         this.content = content;
@@ -49,7 +62,7 @@ public class Board extends BaseEntity {  // 생성날짜,수정날짜 자동 생
     
     
     // 버킷 업데이트 메서드
-    public void update(String title,String content,String deadline,String filename,String filepath){
+    public void update(String title,String content,LocalDate deadline,String filename,String filepath){
         this.title = title;
         this.content = content;
         this.deadline = deadline;

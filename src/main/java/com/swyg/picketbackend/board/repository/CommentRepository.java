@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     //특정 게시글의 모든 댓글 조회
-    @Query(value = "SELECT * FROM comment WHERE board_id = :boardId", nativeQuery = true)
+    @Query(value = "SELECT * FROM comment  WHERE board_id = :boardId", nativeQuery = true)
     List<Comment> findByBoardId(Long boardId);
 
     //특정 닉네임의 모든 댓글 조회

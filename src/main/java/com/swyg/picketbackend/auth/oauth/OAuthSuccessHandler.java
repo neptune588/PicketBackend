@@ -2,7 +2,7 @@ package com.swyg.picketbackend.auth.oauth;
 
 
 
-import com.swyg.picketbackend.auth.dto.auth.LoginDTO;
+import com.swyg.picketbackend.auth.dto.auth.req.LoginDTO;
 import com.swyg.picketbackend.auth.service.AuthService;
 import com.swyg.picketbackend.auth.util.PrincipalDetails;
 import jakarta.servlet.ServletException;

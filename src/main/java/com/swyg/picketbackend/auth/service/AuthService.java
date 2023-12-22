@@ -2,11 +2,14 @@ package com.swyg.picketbackend.auth.service;
 
 import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.auth.domain.RefreshToken;
-import com.swyg.picketbackend.auth.dto.auth.*;
+import com.swyg.picketbackend.auth.dto.auth.req.LoginDTO;
+import com.swyg.picketbackend.auth.dto.auth.req.MemberRequestDTO;
+import com.swyg.picketbackend.auth.dto.auth.req.TokenRequestDTO;
+import com.swyg.picketbackend.auth.dto.auth.res.MemberResponseDTO;
+import com.swyg.picketbackend.auth.dto.auth.res.TokenResponseDTO;
 import com.swyg.picketbackend.auth.jwt.TokenProvider;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
 import com.swyg.picketbackend.auth.repository.RefreshTokenRepository;
-import com.swyg.picketbackend.auth.util.PrincipalDetails;
 import com.swyg.picketbackend.auth.util.SecurityUtil;
 import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.ErrorCode;
@@ -16,8 +19,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,22 +35,22 @@ public class AuthService {
 
     // 회원 가입 서비스
     @Transactional
-    public void signup(MemberRequestDTO memberRequestDto) throws CustomException {  // TODO: MemberResponseDTO 가 아닌 성공 코드 반환으로 변환
-        if (memberRepository.existsByEmail(memberRequestDto.getEmail())) { // 이미 존재하는 유저인지 check
+    public void signup(MemberRequestDTO memberRequestDTO) throws CustomException {  // TODO: MemberResponseDTO 가 아닌 성공 코드 반환으로 변환
+        if (memberRepository.existsByEmail(memberRequestDTO.getEmail())) { // 이미 존재하는 유저인지 check
             throw new CustomException(ErrorCode.DUPLICATE_EMAIL);
         }
 
-        if(memberRepository.existsByNickname(memberRequestDto.getNickname())){ // 닉네임 중복 check
+        if(memberRepository.existsByNickname(memberRequestDTO.getNickname())){ // 닉네임 중복 check
             throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
         }
 
-        Member member = memberRequestDto.toMember(passwordEncoder);
+        Member member = memberRequestDTO.toMember(passwordEncoder);
         MemberResponseDTO.of(memberRepository.save(member));
     }
     
     // 로그인 서비스
     @Transactional
-    public TokenDTO login(LoginDTO loginDTO) {
+    public TokenResponseDTO login(LoginDTO loginDTO) {
         // 1. Login email/Password 를 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken authenticationToken = loginDTO.toAuthentication();
 
@@ -60,23 +61,23 @@ public class AuthService {
         log.info("authentication.getName() : " + authentication.getName());
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
-        TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication);
+        TokenResponseDTO tokenResponseDto = tokenProvider.generateTokenDto(authentication);
 
 
         // 4. RefreshToken 저장
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
-                .value(tokenDto.getRefreshToken())
+                .value(tokenResponseDto.getRefreshToken())
                 .build();
 
         refreshTokenRepository.save(refreshToken);
 
         // 5. 토큰 발급
-        return tokenDto;
+        return tokenResponseDto;
     }
 
     @Transactional
-    public TokenDTO reissue(TokenRequestDTO tokenRequestDto) {
+    public TokenResponseDTO reissue(TokenRequestDTO tokenRequestDto) {
         // 1. Refresh Token 검증
         if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
             throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
@@ -95,14 +96,14 @@ public class AuthService {
         }
 
         // 5. 새로운 토큰 생성
-        TokenDTO tokenDto = tokenProvider.generateTokenDto(authentication);
+        TokenResponseDTO tokenResponseDto = tokenProvider.generateTokenDto(authentication);
 
         // 6. 저장소 정보 업데이트
-        RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
+        RefreshToken newRefreshToken = refreshToken.updateValue(tokenResponseDto.getRefreshToken());
         refreshTokenRepository.save(newRefreshToken);
 
         // 토큰 발급
-        return tokenDto;
+        return tokenResponseDto;
     }
 
     @Transactional

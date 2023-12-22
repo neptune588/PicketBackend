@@ -1,6 +1,7 @@
 package com.swyg.picketbackend.board.repository;
 
 import com.swyg.picketbackend.board.Entity.Board;
+import com.swyg.picketbackend.board.repository.querydsl.CustomBoardRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,9 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Repository
-public interface BoardRepository extends JpaRepository<Board, Long> {
-    @Query(value = "SELECT * FROM board WHERE writer = :writer", nativeQuery = true)
-    List<Board> findAllByWriter(@Param("writer") String writer);
+public interface BoardRepository extends JpaRepository<Board, Long>, CustomBoardRepository {
 
     List<Board> findAllByMemberId(Long memberId);
 
@@ -27,5 +26,4 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     @Query(value = "UPDATE board SET good = good - 1 where board_id = :boardId", nativeQuery = true)
     void subGood(Long boardId);
 
-    List<Board> findAllByTitleContainingOrContentContaining(String title, String content);
 }

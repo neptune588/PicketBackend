@@ -1,16 +1,16 @@
-package com.swyg.picketbackend.board.dto;
+package com.swyg.picketbackend.board.dto.res;
 
 import com.swyg.picketbackend.board.Entity.Board;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 public class BoardResponseDTO {
@@ -23,7 +23,8 @@ public class BoardResponseDTO {
 
     private String content; // 게시글 내용
 
-    private String deadline; // 마감 기한
+
+    private LocalDate deadline; // 마감 기한
 
     private Long heart; // 좋아요 수
 

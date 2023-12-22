@@ -1,4 +1,4 @@
-package com.swyg.picketbackend.auth.dto.auth;
+package com.swyg.picketbackend.auth.dto.auth.req;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

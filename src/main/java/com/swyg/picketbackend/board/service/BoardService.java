@@ -6,9 +6,9 @@ import com.swyg.picketbackend.auth.util.SecurityUtil;
 import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
-import com.swyg.picketbackend.board.dto.BoardRequestDTO;
-import com.swyg.picketbackend.board.dto.BoardResponseDTO;
-import com.swyg.picketbackend.board.dto.PatchBoardDTO;
+import com.swyg.picketbackend.board.dto.req.BoardRequestDTO;
+import com.swyg.picketbackend.board.dto.res.BoardResponseDTO;
+import com.swyg.picketbackend.board.dto.req.PatchBoardDTO;
 import com.swyg.picketbackend.board.repository.BoardRepository;
 import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.ErrorCode;
@@ -60,13 +60,13 @@ public class BoardService {
     }
 
     @Transactional
-    public List<BoardResponseDTO> getSearchedBoardList(String searchKeyWord) { // TODO : 검색 조건 버킷리스트 조회(무한 스크롤 구현 필요)
-        List<Board> boardSearchList = boardRepository.findAllByTitleContainingOrContentContaining(searchKeyWord, searchKeyWord);
+    public List<BoardResponseDTO> getSearchedBoardList(String searchKeyword) { // TODO : 검색 조건 버킷리스트 조회(무한 스크롤 구현 필요)
+        List<Board> boardSearchList = boardRepository.findByKeywordList(searchKeyword);
         return BoardResponseDTO.toDTOList(boardSearchList);
     }
 
     @Transactional
-    public BoardResponseDTO getBoardDetail(Long boardId) {
+    public BoardResponseDTO getBoardDetail(Long boardId) { // Todo: 댓글까지 다 가져오기
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
 

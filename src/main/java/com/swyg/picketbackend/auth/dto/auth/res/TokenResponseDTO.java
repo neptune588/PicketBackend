@@ -1,4 +1,4 @@
-package com.swyg.picketbackend.auth.dto.auth;
+package com.swyg.picketbackend.auth.dto.auth.res;
 
 import lombok.*;
 
@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TokenDTO {
+public class TokenResponseDTO {
 
     private Long memberId;
 
