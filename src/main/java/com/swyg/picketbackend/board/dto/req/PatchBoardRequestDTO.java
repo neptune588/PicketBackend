@@ -15,7 +15,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class PatchBoardDTO {
+public class PatchBoardRequestDTO {
 
     @Schema(description = "게시글 제목",example = "title")
     private String title; // 게시글 제목
@@ -34,8 +34,8 @@ public class PatchBoardDTO {
     private String filepath; // 파일 경로
 
     // entity -> dto
-    public static PatchBoardDTO from(Board board){
-        return PatchBoardDTO.builder()
+    public static PatchBoardRequestDTO from(Board board){
+        return PatchBoardRequestDTO.builder()
                 .title(board.getTitle())
                 .content(board.getContent())
                 .deadline(board.getDeadline())

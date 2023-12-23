@@ -20,9 +20,13 @@ public enum ErrorCode {
 
 
     /*401 BAD Unauthorized : 권한 없음*/
+    UNAUTHORIZED_BOARD_ACCESS(HttpStatus.UNAUTHORIZED,"접근 권한이 없습니다."),
+    UNAUTHORIZED_BOARD_UPDATE(HttpStatus.UNAUTHORIZED,"버킷 수정 권한이 없습니다."),
+    UNAUTHORIZED_BOARD_DELETE(HttpStatus.UNAUTHORIZED,"버킷 삭제 권한이 없습니다."),
+
+    UNAUTHORIZED_REPLY_DELETE(HttpStatus.UNAUTHORIZED,"댓글 삭제 권한이 없습니다."),
+
     UNAUTHORIZED_ACCESS(HttpStatus.UNAUTHORIZED,"접근 권한이 없습니다."),
-    UNAUTHORIZED_UPDATE(HttpStatus.UNAUTHORIZED,"버킷 수정 권한이 없습니다."),
-    UNAUTHORIZED_DELETE(HttpStatus.UNAUTHORIZED,"버킷 삭제 권한이 없습니다."),
 
 
     /*403 Forbidden : 접근 금지*/
@@ -38,8 +42,8 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일의 회원을 찾을 수 업습니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청 리소스를 찾을 수 없습니다."),
-    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND,"해당 버킷을 찾을 수 없습니다.");
-
+    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND,"버킷을 찾을 수 없습니다."),
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND,"댓글을 찾을 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;

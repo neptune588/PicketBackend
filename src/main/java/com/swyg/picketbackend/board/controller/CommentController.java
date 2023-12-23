@@ -1,45 +1,45 @@
 package com.swyg.picketbackend.board.controller;
 
-import com.swyg.picketbackend.board.Entity.Comment;
-import com.swyg.picketbackend.board.dto.res.CommentResponseDTO;
+import com.swyg.picketbackend.board.dto.req.PostCommentRequestDTO;
 import com.swyg.picketbackend.board.service.CommentService;
+import com.swyg.picketbackend.global.dto.SuccessResponse;
+import com.swyg.picketbackend.global.util.SuccessCode;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @Log4j2
-@Tag(name = "BoardController", description = "게시글 관련 api")
+@Tag(name = "CommentController", description = "버킷 댓글 관련 api")
 @RestController
-@RequestMapping("/board/comments")
+@RequestMapping("/board")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
 
-    /*@GetMapping("/{boardId}") // 특정 게시물 댓글 조회
+   /* @GetMapping("/{boardId}/comments") // 특정 게시물 댓글 조회
     public ResponseEntity<List<CommentResponseDTO>> commentsList(@PathVariable Long boardId){
        return commentService.findComments(boardId);
     }*/
 
- /*   @PostMapping("/board/list/{boardId}/comments")
-    public ResponseEntity<Comment> write(@PathVariable Long boardId,@RequestBody Comment comment){
-        Comment result = commentService.write(boardId, comment);
-        return (result != null) ?
-                ResponseEntity.status(HttpStatus.OK).body(result):
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }*/
 
-    /*@DeleteMapping("/board/list/comments/{id}")
-    public ResponseEntity<Comment> delete(@PathVariable Long id,String nickname){
+    // 댓글 등록
+    @PostMapping("/{boardId}/comments")
+    public ResponseEntity<SuccessResponse> commentAdd(@PathVariable Long boardId, @RequestBody PostCommentRequestDTO postCommentRequestDTO) {
+        commentService.addComment(boardId, postCommentRequestDTO);
+        return SuccessResponse.success(SuccessCode.COMMENT_INSERT_SUCCESS);
+    }
 
-        Comment result = commentService.delete(id, nickname);
-        return (result != null) ?
-                ResponseEntity.status(HttpStatus.OK).body(result):
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-    }*/
+    // 댓글 삭제
+    @DeleteMapping("/{boardId}/comments/{commentId}")
+    public ResponseEntity<SuccessResponse> commentRemove(
+            @PathVariable Long boardId,
+            @PathVariable Long commentId) {
+
+        commentService.removeComment(boardId, commentId);
+        return SuccessResponse.success(SuccessCode.COMMENT_DELETE_SUCCESS);
+    }
 }

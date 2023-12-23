@@ -1,17 +1,11 @@
 package com.swyg.picketbackend.board.repository.querydsl;
 
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.swyg.picketbackend.board.Entity.Board;
-import com.swyg.picketbackend.board.Entity.QBoard;
-import com.swyg.picketbackend.board.dto.req.BoardListRequestDTO;
+import com.swyg.picketbackend.board.dto.req.GetBoardListRequestDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
@@ -20,8 +14,8 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public Slice<Board> findByList(BoardListRequestDTO boardListRequestDTO) {
-        QBoard board = QBoard.board;
+    public Slice<Board> findByList(GetBoardListRequestDTO getBoardListRequestDTO) {
+       /* QBoard board = QBoard.board;
 
         // parameter setting
         String keyword = boardListRequestDTO.getKeyword(); // 키워드
@@ -57,8 +51,8 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository {
             boardList.remove(size);
         }
 
-        return new SliceImpl<>(boardList, PageRequest.of(page,size),hasNext);
-
+        return new SliceImpl<>(boardList, PageRequest.of(page,size),hasNext);*/
+        return null;
     }
 }
 

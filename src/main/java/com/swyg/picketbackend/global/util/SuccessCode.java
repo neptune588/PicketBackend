@@ -23,6 +23,12 @@ public enum SuccessCode {
     // 버킷 관련
     BOARD_UPDATE_SUCCESS(HttpStatus.OK,"버킷을 수정하였습니다."),
     BOARD_DELETE_SUCCESS(HttpStatus.OK,"버킷을 삭제하였습니다."),
+    BOARD_INSERT_SUCCESS(HttpStatus.OK,"버킷이 추가되었습니다."),
+
+    // 댓글 관련
+    COMMENT_INSERT_SUCCESS(HttpStatus.OK,"댓글을 등록하였습니다."),
+    COMMENT_DELETE_SUCCESS(HttpStatus.OK,"댓글을 삭제하였습니다."),
+
 
     DELETE_SUCCESS(HttpStatus.OK,"DELETE_SUCCESS"),
 

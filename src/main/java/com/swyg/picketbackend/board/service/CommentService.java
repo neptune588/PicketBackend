@@ -1,10 +1,15 @@
 package com.swyg.picketbackend.board.service;
 
+import com.swyg.picketbackend.auth.domain.Member;
+import com.swyg.picketbackend.auth.util.SecurityUtil;
 import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.board.Entity.Comment;
+import com.swyg.picketbackend.board.dto.req.PostCommentRequestDTO;
 import com.swyg.picketbackend.board.dto.res.CommentResponseDTO;
 import com.swyg.picketbackend.board.repository.BoardRepository;
 import com.swyg.picketbackend.board.repository.CommentRepository;
+import com.swyg.picketbackend.global.exception.CustomException;
+import com.swyg.picketbackend.global.util.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -19,6 +24,39 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     private final BoardRepository boardRepository;
+
+
+    // 버킷 댓글 등록
+    public void addComment(Long boardId, PostCommentRequestDTO postCommentRequestDTO) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        Member member = Member.setId(currentMemberId); // 작성 회원 번호 set
+        Board board = Board.setId(boardId); // 버킷 번호 set
+
+        boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND)); // 게시물 존재하는 지 확인
+
+        Comment comment = Comment.toComment(member, board, postCommentRequestDTO.getContent()); // dto -> entity
+
+        commentRepository.save(comment);
+    }
+
+    // 버킷 댓글 삭제
+    public void removeComment(Long boardId, Long commentId) {
+        Long currentMemberId = SecurityUtil.getCurrentMemberId();
+
+        Board findParent = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+
+        Comment target = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (target.getMember().getId().equals(currentMemberId)) { // 로그인한 회원이 쓴 댓글인지 확인
+            commentRepository.delete(target);
+        } else {
+            throw new CustomException(ErrorCode.UNAUTHORIZED_REPLY_DELETE);
+        }
+    }
 
     /*public List<CommentResponseDTO> findComments(Long boardId) {
 

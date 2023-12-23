@@ -132,7 +132,7 @@ public class AuthService {
 
 
         if (!currentMemberId.equals(id)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS); // 로그인한 사용자가 아니면 접근 권한 없음 throw exception
+            throw new CustomException(ErrorCode.UNAUTHORIZED_BOARD_ACCESS); // 로그인한 사용자가 아니면 접근 권한 없음 throw exception
         }
 
         Member member = memberRepository.findById(id)

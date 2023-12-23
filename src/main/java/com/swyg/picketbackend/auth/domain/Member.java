@@ -60,7 +60,8 @@ public class Member extends BaseEntity {
     }
 
 
-    public static Member setId(Long id) {  // 게시글 CRUD을 위한 회원 번호 set
+    // 게시글 등록을 위한 회원 번호 set
+    public static Member setId(Long id) {
         Member member = new Member();
         member.id = id;
         return member;

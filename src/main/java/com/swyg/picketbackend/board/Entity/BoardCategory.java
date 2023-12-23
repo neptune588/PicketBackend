@@ -16,12 +16,16 @@ public class BoardCategory { // Board와 category의 중간 테이블
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
 
+    public BoardCategory(Board board,Category category){
+        this.board = board;
+        this.category = category;
+    }
 }

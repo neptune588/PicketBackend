@@ -6,10 +6,13 @@ import com.swyg.picketbackend.auth.util.SecurityUtil;
 import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
-import com.swyg.picketbackend.board.dto.req.BoardListRequestDTO;
-import com.swyg.picketbackend.board.dto.req.BoardRequestDTO;
+import com.swyg.picketbackend.board.Entity.BoardCategory;
+import com.swyg.picketbackend.board.Entity.Category;
+import com.swyg.picketbackend.board.dto.req.GetBoardListRequestDTO;
+import com.swyg.picketbackend.board.dto.req.PostBoardRequestDTO;
 import com.swyg.picketbackend.board.dto.res.BoardResponseDTO;
-import com.swyg.picketbackend.board.dto.req.PatchBoardDTO;
+import com.swyg.picketbackend.board.dto.req.PatchBoardRequestDTO;
+import com.swyg.picketbackend.board.repository.BoardCategoryRepository;
 import com.swyg.picketbackend.board.repository.BoardRepository;
 import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.ErrorCode;
@@ -35,6 +38,8 @@ public class BoardService {
 
     private final MemberRepository memberRepository;
 
+    private final BoardCategoryRepository boardCategoryRepository;
+
     private final AmazonS3Client amazonS3Client;
 
     @Value("${cloud.aws.s3.bucket}")
@@ -56,8 +61,8 @@ public class BoardService {
     }
 
     @Transactional
-    public Slice<BoardResponseDTO> findList(BoardListRequestDTO boardListRequestDTO) { // TODO : 검색 조건 버킷리스트 조회(무한 스크롤 구현 필요)
-        Slice<Board> boardSearchList = boardRepository.findByList(boardListRequestDTO);
+    public Slice<BoardResponseDTO> findList(GetBoardListRequestDTO getBoardListRequestDTO) { // TODO : 검색 조건 버킷리스트 조회(무한 스크롤 구현 필요)
+        Slice<Board> boardSearchList = boardRepository.findByList(getBoardListRequestDTO);
         return null;
     }
 
@@ -69,12 +74,15 @@ public class BoardService {
         return BoardResponseDTO.from(board); // entity -> dto
     }
 
+    //  첨부파일 있는 게시글 작성 서비스
     @Transactional
-    public void writeWithFile(BoardRequestDTO boardRequestDTO, @RequestParam("file") MultipartFile file) throws IOException { //  첨부파일 있는 게시글 작성
+    public void addBoardWithFile(PostBoardRequestDTO postBoardRequestDTO, @RequestParam("file") MultipartFile file) throws IOException {
 
         Long currentMemberId = SecurityUtil.getCurrentMemberId(); // 현재 로그인한 회원 ID
 
         Member member = Member.setId(currentMemberId); // 회원번호 set
+
+        List<Category> categoryList = postBoardRequestDTO.toCategoryList(); // 게시물 소속 카테고리 ID 수집
 
         UUID uuid = UUID.randomUUID();
 
@@ -85,9 +93,9 @@ public class BoardService {
         // dto -> Entity
         Board board = Board.builder()
                 .member(member)
-                .title(boardRequestDTO.getTitle())
-                .content(boardRequestDTO.getContent())
-                .deadline(boardRequestDTO.getDeadline())
+                .title(postBoardRequestDTO.getTitle())
+                .content(postBoardRequestDTO.getContent())
+                .deadline(postBoardRequestDTO.getDeadline())
                 .scrap(0L)   // scrap default :0
                 .heart(0L)  // heart default :0
                 .filename(filename)
@@ -100,31 +108,44 @@ public class BoardService {
         metadata.setContentLength(file.getSize());
         amazonS3Client.putObject(bucket, filename, file.getInputStream(), metadata);
 
-        boardRepository.save(board);
+        Board boardEntity = boardRepository.save(board);
+
+        for (Category category : categoryList) {
+            BoardCategory boardCategory = new BoardCategory(boardEntity, category);
+            boardCategoryRepository.save(boardCategory);
+        }
     }
 
+    //  첨부파일 없는 게시글 작성 서비스
     @Transactional
-    public void write(BoardRequestDTO boardRequestDTO) { //  첨부파일 없는 게시글 작성
+    public void addBoard(PostBoardRequestDTO postBoardRequestDTO) {
 
         Long currentMemberId = SecurityUtil.getCurrentMemberId(); // 현재 로그인한 회원 ID
 
         Member member = Member.setId(currentMemberId); // 회원번호 set
 
+        List<Category> categoryList = postBoardRequestDTO.toCategoryList();
+
         // dto -> Entity
         Board board = Board.builder()
                 .member(member)
-                .title(boardRequestDTO.getTitle())
-                .content(boardRequestDTO.getContent())
-                .deadline(boardRequestDTO.getDeadline())
+                .title(postBoardRequestDTO.getTitle())
+                .content(postBoardRequestDTO.getContent())
+                .deadline(postBoardRequestDTO.getDeadline())
                 .scrap(0L)   // scrap default :0
                 .heart(0L)  // heart default :0
                 .build();
 
-        boardRepository.save(board);
+        Board boardEntity = boardRepository.save(board);
+
+        for (Category category : categoryList) {
+            BoardCategory boardCategory = new BoardCategory(boardEntity, category);
+            boardCategoryRepository.save(boardCategory);
+        }
     }
 
     @Transactional
-    public BoardResponseDTO update(Long boardId, PatchBoardDTO patchBoardDTO) {
+    public BoardResponseDTO update(Long boardId, PatchBoardRequestDTO patchBoardDTO) {
         // 1. 대상 찾기
         Board target = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
@@ -136,7 +157,7 @@ public class BoardService {
         log.info("targetMemberId {}", targetMemberId);
 
         if (!currentMemberId.equals(targetMemberId)) { // 로그인한 회원의 작성 버킷인지 확인
-            throw new CustomException(ErrorCode.UNAUTHORIZED_UPDATE);
+            throw new CustomException(ErrorCode.UNAUTHORIZED_BOARD_UPDATE);
         }
 
         target.update(patchBoardDTO.getTitle(), patchBoardDTO.getContent(),
@@ -159,7 +180,7 @@ public class BoardService {
         Long targetMemberId = target.getMember().getId();
 
         if (!currentMemberId.equals(targetMemberId)) { // 로그인한 회원의 작성 버킷인지 확인
-            throw new CustomException(ErrorCode.UNAUTHORIZED_UPDATE);
+            throw new CustomException(ErrorCode.UNAUTHORIZED_BOARD_DELETE);
         }
         //3. 대상 삭제 후 정상응답
         boardRepository.delete(target);
