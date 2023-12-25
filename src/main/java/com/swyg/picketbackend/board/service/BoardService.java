@@ -1,6 +1,5 @@
 package com.swyg.picketbackend.board.service;
 
-import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.swyg.picketbackend.auth.util.SecurityUtil;
@@ -8,16 +7,15 @@ import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.board.Entity.BoardCategory;
 import com.swyg.picketbackend.board.Entity.Category;
-import com.swyg.picketbackend.board.dto.req.GetBoardListRequestDTO;
-import com.swyg.picketbackend.board.dto.req.PostBoardRequestDTO;
-import com.swyg.picketbackend.board.dto.res.GetBoardDetailsResponseDTO;
-import com.swyg.picketbackend.board.dto.res.GetMyBoardListResponseDTO;
-import com.swyg.picketbackend.board.dto.req.PatchBoardRequestDTO;
+import com.swyg.picketbackend.board.dto.req.board.GetBoardListRequestDTO;
+import com.swyg.picketbackend.board.dto.req.board.PostBoardRequestDTO;
+import com.swyg.picketbackend.board.dto.res.board.GetBoardDetailsResponseDTO;
+import com.swyg.picketbackend.board.dto.res.board.GetMyBoardListResponseDTO;
+import com.swyg.picketbackend.board.dto.req.board.PatchBoardRequestDTO;
 import com.swyg.picketbackend.board.repository.BoardCategoryRepository;
 import com.swyg.picketbackend.board.repository.BoardRepository;
 import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.ErrorCode;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

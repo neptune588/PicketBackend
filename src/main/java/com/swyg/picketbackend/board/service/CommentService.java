@@ -4,8 +4,7 @@ import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.auth.util.SecurityUtil;
 import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.board.Entity.Comment;
-import com.swyg.picketbackend.board.dto.req.PostCommentRequestDTO;
-import com.swyg.picketbackend.board.dto.res.CommentResponseDTO;
+import com.swyg.picketbackend.board.dto.req.comment.PostCommentRequestDTO;
 import com.swyg.picketbackend.board.repository.BoardRepository;
 import com.swyg.picketbackend.board.repository.CommentRepository;
 import com.swyg.picketbackend.global.exception.CustomException;
@@ -13,8 +12,6 @@ import com.swyg.picketbackend.global.util.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Log4j2
 @Service

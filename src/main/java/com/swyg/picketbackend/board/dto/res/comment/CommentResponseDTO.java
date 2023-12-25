@@ -1,4 +1,4 @@
-package com.swyg.picketbackend.board.dto.res;
+package com.swyg.picketbackend.board.dto.res.comment;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

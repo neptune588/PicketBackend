@@ -1,6 +1,6 @@
 package com.swyg.picketbackend.board.controller;
 
-import com.swyg.picketbackend.board.dto.req.PostCommentRequestDTO;
+import com.swyg.picketbackend.board.dto.req.comment.PostCommentRequestDTO;
 import com.swyg.picketbackend.board.service.CommentService;
 import com.swyg.picketbackend.global.dto.SuccessResponse;
 import com.swyg.picketbackend.global.util.SuccessCode;

@@ -3,23 +3,16 @@ package com.swyg.picketbackend.comment;
 
 import com.swyg.picketbackend.auth.domain.Member;
 import com.swyg.picketbackend.board.Entity.Board;
-import com.swyg.picketbackend.board.Entity.BoardCategory;
-import com.swyg.picketbackend.board.Entity.Category;
 import com.swyg.picketbackend.board.Entity.Comment;
-import com.swyg.picketbackend.board.repository.BoardCategoryRepository;
 import com.swyg.picketbackend.board.repository.BoardRepository;
 import com.swyg.picketbackend.board.repository.CommentRepository;
-import com.swyg.picketbackend.global.exception.CustomException;
-import com.swyg.picketbackend.global.util.ErrorCode;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Log4j2
 @SpringBootTest

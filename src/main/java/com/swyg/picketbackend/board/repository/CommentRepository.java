@@ -1,7 +1,7 @@
 package com.swyg.picketbackend.board.repository;
 
 import com.swyg.picketbackend.board.Entity.Comment;
-import com.swyg.picketbackend.board.repository.querydsl.commnent.CustomCommentRepository;
+import com.swyg.picketbackend.board.repository.querydsl.comment.CustomCommentRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

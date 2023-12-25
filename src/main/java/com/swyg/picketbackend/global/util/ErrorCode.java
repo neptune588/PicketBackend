@@ -38,6 +38,9 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.CONFLICT,"이미 존재하는 이메일입니다."),
     DUPLICATE_NICKNAME(HttpStatus.CONFLICT,"이미 존재하는 닉네임입니다."),
     INSERT_FAILED(HttpStatus.CONFLICT,"등록에 실패하였습니다."),
+    ALREADY_LIKED(HttpStatus.CONFLICT,"이미 좋아요를 누른 버킷입니다."),
+
+
 
     /*404 NOT_FOUND : 요청 리소스를 찾을 수 없음*/
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),

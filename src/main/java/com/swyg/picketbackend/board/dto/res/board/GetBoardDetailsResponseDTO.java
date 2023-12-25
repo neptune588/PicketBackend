@@ -1,4 +1,4 @@
-package com.swyg.picketbackend.board.dto.res;
+package com.swyg.picketbackend.board.dto.res.board;
 
 import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.board.dto.util.BoardCategoryDTO;

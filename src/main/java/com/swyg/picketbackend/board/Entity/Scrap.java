@@ -28,10 +28,5 @@ public class Scrap {
     @JsonIgnore
     private Board board;
 
-    @Override
-    public String toString() {
-        return "Scrap{" +
-                "id=" + id +
-                '}';
-    }
+
 }

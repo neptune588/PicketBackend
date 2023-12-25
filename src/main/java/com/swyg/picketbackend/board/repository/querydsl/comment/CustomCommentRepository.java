@@ -1,7 +1,5 @@
-package com.swyg.picketbackend.board.repository.querydsl.commnent;
+package com.swyg.picketbackend.board.repository.querydsl.comment;
 
-
-import java.util.List;
 
 public interface CustomCommentRepository {
 

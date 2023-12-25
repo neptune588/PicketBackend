@@ -1,10 +1,10 @@
 package com.swyg.picketbackend.board.controller;
 
-import com.swyg.picketbackend.board.dto.req.GetBoardListRequestDTO;
-import com.swyg.picketbackend.board.dto.req.PostBoardRequestDTO;
-import com.swyg.picketbackend.board.dto.res.GetBoardDetailsResponseDTO;
-import com.swyg.picketbackend.board.dto.res.GetMyBoardListResponseDTO;
-import com.swyg.picketbackend.board.dto.req.PatchBoardRequestDTO;
+import com.swyg.picketbackend.board.dto.req.board.GetBoardListRequestDTO;
+import com.swyg.picketbackend.board.dto.req.board.PostBoardRequestDTO;
+import com.swyg.picketbackend.board.dto.res.board.GetBoardDetailsResponseDTO;
+import com.swyg.picketbackend.board.dto.res.board.GetMyBoardListResponseDTO;
+import com.swyg.picketbackend.board.dto.req.board.PatchBoardRequestDTO;
 import com.swyg.picketbackend.board.service.BoardService;
 import com.swyg.picketbackend.global.dto.SuccessResponse;
 import com.swyg.picketbackend.global.exception.CustomException;
@@ -77,7 +77,7 @@ public class BoardController {
         return SuccessResponse.success(SuccessCode.BOARD_INSERT_SUCCESS);
     }
 
-    //
+    // TODO : 완료
     @Operation(summary = "버킷리스트 수정", description = "버킷리스트 수정 API")
     @PatchMapping("/{boardId}") // 버킷리스트 수정
     public ResponseEntity<SuccessResponse> boardModify(@PathVariable Long boardId,

@@ -1,12 +1,10 @@
-package com.swyg.picketbackend.board.repository.querydsl.commnent;
+package com.swyg.picketbackend.board.repository.querydsl.comment;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Repository

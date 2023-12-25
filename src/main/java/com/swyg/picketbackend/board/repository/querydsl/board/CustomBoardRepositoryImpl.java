@@ -4,7 +4,7 @@ package com.swyg.picketbackend.board.repository.querydsl.board;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.swyg.picketbackend.board.Entity.*;
-import com.swyg.picketbackend.board.dto.req.GetBoardListRequestDTO;
+import com.swyg.picketbackend.board.dto.req.board.GetBoardListRequestDTO;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -37,6 +37,7 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository {
                 .where(boardDetails.id.eq(boardId))
                 .fetchOne();
     }
+
 
 
     @Override

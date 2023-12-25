@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Entity
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Heart {
@@ -30,10 +31,10 @@ public class Heart {
     private Board board;
 
 
-    @Override
-    public String toString() {
-        return "Heart{" +
-                "id=" + id +
-                '}';
+    public static Heart addlike(Member member, Board board) {
+        return Heart.builder()
+                .board(board)
+                .member(member)
+                .build();
     }
 }

@@ -1,4 +1,4 @@
-package com.swyg.picketbackend.board.dto.req;
+package com.swyg.picketbackend.board.dto.req.board;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
