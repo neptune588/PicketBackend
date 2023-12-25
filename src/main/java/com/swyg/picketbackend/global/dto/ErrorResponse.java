@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Getter
@@ -64,6 +65,16 @@ public class ErrorResponse {
                 .body(ErrorResponse.builder()
                         .status(HttpStatus.UNAUTHORIZED)
                         .message(e.getMessage())
+                        .build());
+    }
+
+    // UserNameNotFound 예외 처리 response 메서드
+    public static ResponseEntity<ErrorResponse> numberFormatError(NumberFormatException e) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(ErrorResponse.builder()
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .message("로그인이 필요합니다.")
                         .build());
     }
 }

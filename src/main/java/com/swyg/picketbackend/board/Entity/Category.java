@@ -2,13 +2,13 @@ package com.swyg.picketbackend.board.Entity;
 
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.extern.log4j.Log4j2;
 
-import java.util.ArrayList;
-import java.util.List;
-
+@Log4j2
 @Entity
+@Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
 
@@ -20,12 +20,17 @@ public class Category {
     private String name; // 카테고리 이름
 
 
-    @OneToMany(mappedBy = "category")
-    private List<BoardCategory> boardCategoryList = new ArrayList<>();
-
     // 카테고리 setting 생성자
     public Category(Long categoryId) {
         this.id = categoryId;
     }
 
+
+    @Override
+    public String toString() {
+        return "Category{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

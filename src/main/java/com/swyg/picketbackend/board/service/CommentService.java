@@ -30,6 +30,11 @@ public class CommentService {
     public void addComment(Long boardId, PostCommentRequestDTO postCommentRequestDTO) {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
 
+        if(currentMemberId==null || currentMemberId.equals(0L)){
+            throw new CustomException(ErrorCode.UNAUTHORIZED_NEED_LOGIN);
+        }
+
+
         Member member = Member.setId(currentMemberId); // 작성 회원 번호 set
         Board board = Board.setId(boardId); // 버킷 번호 set
 

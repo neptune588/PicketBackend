@@ -1,16 +1,17 @@
 package com.swyg.picketbackend.board.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.swyg.picketbackend.auth.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Entity
 @Getter
-@ToString
-@Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Heart {
 
     @Id
@@ -20,12 +21,19 @@ public class Heart {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    @JsonIgnore
+    @JsonBackReference
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
-    @JsonIgnore
+    @JsonBackReference
     private Board board;
 
+
+    @Override
+    public String toString() {
+        return "Heart{" +
+                "id=" + id +
+                '}';
+    }
 }

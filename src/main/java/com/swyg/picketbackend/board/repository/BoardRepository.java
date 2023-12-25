@@ -1,7 +1,7 @@
 package com.swyg.picketbackend.board.repository;
 
 import com.swyg.picketbackend.board.Entity.Board;
-import com.swyg.picketbackend.board.repository.querydsl.CustomBoardRepository;
+import com.swyg.picketbackend.board.repository.querydsl.board.CustomBoardRepository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

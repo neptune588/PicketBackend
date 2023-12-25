@@ -1,4 +1,4 @@
-package com.swyg.picketbackend.board.repository.querydsl;
+package com.swyg.picketbackend.board.repository.querydsl.board;
 
 import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.board.dto.req.GetBoardListRequestDTO;

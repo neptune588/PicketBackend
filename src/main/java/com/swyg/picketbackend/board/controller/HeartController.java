@@ -17,10 +17,8 @@ public class HeartController {
     private HeartService heartService;
 
     @PostMapping("/board/list/{boardId}/like") // 좋아요 클릭
-    public ResponseEntity<Heart> clickLike(@PathVariable Long boardId, @RequestBody Member member){
-        Heart result = heartService.clickLike(boardId, member);
-        return (result != null) ?
-                ResponseEntity.status(HttpStatus.OK).body(result):
-                ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    public ResponseEntity<Heart> clickLike(@PathVariable Long boardId, @RequestBody Member member) {
+
+        return null;
     }
 }

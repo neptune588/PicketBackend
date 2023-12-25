@@ -1,18 +1,29 @@
 package com.swyg.picketbackend.board.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.swyg.picketbackend.auth.domain.Member;
+import com.swyg.picketbackend.board.dto.req.PatchBoardRequestDTO;
+import com.swyg.picketbackend.board.dto.req.PostBoardRequestDTO;
 import com.swyg.picketbackend.global.dto.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.log4j.Log4j2;
+import org.hibernate.annotations.BatchSize;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 @Entity
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "")
 public class Board extends BaseEntity {  // 생성날짜,수정날짜 자동 생성
 
     @Id
@@ -20,16 +31,14 @@ public class Board extends BaseEntity {  // 생성날짜,수정날짜 자동 생
     @Column(name = "board_id")
     private Long id;  // 게시글 번호
 
+    @Column(columnDefinition = "VARCHAR(10000)")
     private String title; // 게시글 제목
 
+    @Column(columnDefinition = "VARCHAR(10000)")
     private String content; // 게시글 내용
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate deadline; // 종료 날짜
-
-    private Long heart; // 좋아요 수
-
-    private Long scrap; // 스크랩 수
 
     private String filename; // 파일 이름
 
@@ -37,40 +46,50 @@ public class Board extends BaseEntity {  // 생성날짜,수정날짜 자동 생
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false) // member_id가 반드시 존재해야 함
     @JoinColumn(name = "member_id")
+    @JsonManagedReference
     private Member member;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @BatchSize(size = 1000)
+    @JsonManagedReference
+    private List<Heart> heart = new ArrayList<>(); // 좋아요
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @BatchSize(size = 1000)
+    @JsonManagedReference
+    private List<Scrap> scrap = new ArrayList<>(); // 스크랩
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @BatchSize(size = 1000)
+    @JsonManagedReference
     private List<BoardCategory> boardCategoryList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @BatchSize(size = 1000)
     private List<Comment> commentList = new ArrayList<>();
 
 
     // dto -> entity
-    @Builder
-    public Board(Member member, String title, String content,
-                 LocalDate deadline, Long heart, Long scrap,
-                 String filename, String filepath, List<BoardCategory> boardCategoryList
-    ) {
-        this.member = member;
-        this.title = title;
-        this.content = content;
-        this.heart = heart;
-        this.scrap = scrap;
-        this.deadline = deadline;
-        this.filename = filename;
-        this.filepath = filepath;
-        this.boardCategoryList = boardCategoryList;
+    public static Board toEntity(PostBoardRequestDTO postBoardRequestDTO, Member member, String filename, String filepath) {
+        return Board.builder()
+                .title(postBoardRequestDTO.getTitle())
+                .content(postBoardRequestDTO.getContent())
+                .deadline(postBoardRequestDTO.getDeadline())
+                .member(member)
+                .filename(filename)
+                .filepath(filepath)
+                .heart(null)
+                .scrap(null)
+                .build();
     }
 
-
     // 버킷 업데이트 메서드
-    public void update(String title, String content, LocalDate deadline, String filename, String filepath) {
-        this.title = title;
-        this.content = content;
-        this.deadline = deadline;
-        this.filepath = filepath;
+    public void updateBoard(PatchBoardRequestDTO patchBoardRequestDTO, String filename, String filepath) {
+        this.title = patchBoardRequestDTO.getTitle();
+        this.content = patchBoardRequestDTO.getContent();
+        this.deadline = patchBoardRequestDTO.getDeadline();
         this.filename = filename;
+        this.filepath = filepath;
     }
 
 
@@ -80,4 +99,7 @@ public class Board extends BaseEntity {  // 생성날짜,수정날짜 자동 생
         board.id = boardId;
         return board;
     }
+
+
 }
+

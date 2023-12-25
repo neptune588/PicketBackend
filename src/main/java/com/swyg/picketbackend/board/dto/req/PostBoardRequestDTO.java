@@ -2,6 +2,8 @@ package com.swyg.picketbackend.board.dto.req;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.swyg.picketbackend.auth.domain.Member;
+import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.board.Entity.Category;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -19,10 +21,10 @@ import java.util.List;
 @NoArgsConstructor
 public class PostBoardRequestDTO { // 게시글 작성 DTO
 
-    @Schema(description = "버킷 제목", example = "title")
+    @Schema(description = "버킷 제목", example = "버킷 제목")
     private String title; // 게시글 제목
 
-    @Schema(description = "버킷 내용", example = "content")
+    @Schema(description = "버킷 내용", example = "버킷 내용")
     private String content; // 게시글 내용
 
     @Schema(description = "버킷 종료일", example = "2023-12-30")
@@ -33,7 +35,7 @@ public class PostBoardRequestDTO { // 게시글 작성 DTO
     private List<Long> categoryList; // 게시글이 속한 카테고리 목록
 
 
-    // List<String> -> List<Category>로 변환
+    // List<Long> -> List<Category>로 변환
     public List<Category> toCategoryList() {
         List<Category> categoryList = new ArrayList<>();
         for (Long categoryId : this.categoryList) {
@@ -41,4 +43,7 @@ public class PostBoardRequestDTO { // 게시글 작성 DTO
         }
         return categoryList;
     }
+
+
+
 }

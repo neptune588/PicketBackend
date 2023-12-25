@@ -1,8 +1,9 @@
-package com.swyg.picketbackend.board.repository.querydsl;
+package com.swyg.picketbackend.board.repository.querydsl.board;
+
+
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.swyg.picketbackend.board.Entity.Board;
-import com.swyg.picketbackend.board.Entity.QBoard;
+import com.swyg.picketbackend.board.Entity.*;
 import com.swyg.picketbackend.board.dto.req.GetBoardListRequestDTO;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
@@ -36,6 +37,7 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository {
                 .where(boardDetails.id.eq(boardId))
                 .fetchOne();
     }
+
 
     @Override
     public Slice<Board> findByList(GetBoardListRequestDTO getBoardListRequestDTO) {

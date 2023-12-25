@@ -1,13 +1,14 @@
 package com.swyg.picketbackend.board;
 
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.swyg.picketbackend.auth.domain.Member;
-import com.swyg.picketbackend.board.Entity.Board;
-import com.swyg.picketbackend.board.Entity.BoardCategory;
-import com.swyg.picketbackend.board.Entity.Category;
-import com.swyg.picketbackend.board.dto.req.PostBoardRequestDTO;
+import com.swyg.picketbackend.board.Entity.*;
 import com.swyg.picketbackend.board.repository.BoardCategoryRepository;
 import com.swyg.picketbackend.board.repository.BoardRepository;
+import com.swyg.picketbackend.board.repository.querydsl.board.CustomBoardRepositoryImpl;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,17 @@ public class BoardServiceTests {
     private BoardRepository boardRepository;
 
     @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
     private BoardCategoryRepository boardCategoryRepository;
+
+    @Autowired
+    private JPAQueryFactory jpaQueryFactory;
+
+    @Autowired
+    private CustomBoardRepositoryImpl customBoardRepositoryImpl;
+
 
 
     @Test
@@ -45,8 +56,6 @@ public class BoardServiceTests {
                 .title("버킷 등록 제목 테스트")
                 .content("버킷 등록 내용")
                 .deadline(LocalDate.of(2023, 12, 30))
-                .scrap(0L)   // scrap default :0
-                .heart(0L)  // heart default :0
                 .build();
 
         Board saveBoard = boardRepository.save(board);
@@ -60,4 +69,14 @@ public class BoardServiceTests {
     }
 
 
+    @Test
+    @DisplayName("버킷 상세조회 테스트")
+    @Transactional
+    public void detailBoardTests() {
+        // given
+        Long boardId = 1L;
+
+        // when
+        // then
+    }
 }

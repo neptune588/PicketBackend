@@ -25,6 +25,8 @@ public class AuthController {
 
     private final AuthService authService;
 
+
+    // TODO : 완료
     @Operation(summary = "회원가입 이메일 중복 검사", description = "회원 가입 이메일 중복 검사 API")
     @PostMapping("/signup/check-email")
     public ResponseEntity<SuccessResponse> emailCheck(@RequestBody String email) throws CustomException {
@@ -33,6 +35,7 @@ public class AuthController {
         return SuccessResponse.success(SuccessCode.EMAIL_CHECK_SUCCESS);
     }
 
+    // TODO : 완료
     @Operation(summary = "회원가입 닉네임 중복 검사", description = "회원 가입 닉네임 중복 검사 API")
     @PostMapping("/signup/check-nickname")
     public ResponseEntity<SuccessResponse> nicknameCheck(@RequestBody String nickname) throws CustomException {
@@ -40,19 +43,22 @@ public class AuthController {
         return SuccessResponse.success(SuccessCode.NICKNAME_CHECK_SUCCESS);
     }
 
+    // TODO : 완료
     @Operation(summary = "회원가입", description = "회원 가입 API")
     @PostMapping("/signup")
     public ResponseEntity<SuccessResponse> signup(@RequestBody SignupRequestDTO signupRequestDTO) throws CustomException {
         authService.signup(signupRequestDTO);
         return SuccessResponse.success(SuccessCode.SIGNUP_SUCCESS);
     }
-
+    
+    // TODO : 완료
     @Operation(summary = "로그인", description = "로그인을 통해 인증을 위한 엑세스 토큰 및 리프레쉬 토큰을 획득한다.(response body로 리턴)")
     @PostMapping("/login")
     public ResponseEntity<TokenResponseDTO> login(@RequestBody LoginDTO loginDTO) {
         return ResponseEntity.ok(authService.login(loginDTO));
     }
-
+    
+    // TODO : 완료
     @Operation(summary = "토큰 재발급", description = "토큰이 만료되거나 유효하지 않으면 재발급한다.(response body로 리턴)")
     @PostMapping("/reissue")
     public ResponseEntity<TokenResponseDTO> reissue(@RequestBody TokenRequestDTO tokenRequestDto) throws CustomException {

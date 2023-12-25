@@ -13,6 +13,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
+
 @Log4j2
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -31,6 +33,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = UsernameNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException e) {
         return ErrorResponse.userNameNotFoundError(e);
+    }
+
+    @ExceptionHandler(value = NumberFormatException.class)
+    public ResponseEntity<ErrorResponse> handleNumberFormatException(NumberFormatException e) {
+        return ErrorResponse.numberFormatError(e);
     }
 
 }

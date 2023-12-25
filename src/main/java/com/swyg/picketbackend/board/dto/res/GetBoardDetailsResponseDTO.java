@@ -1,14 +1,10 @@
 package com.swyg.picketbackend.board.dto.res;
 
+import com.swyg.picketbackend.board.Entity.Board;
+import com.swyg.picketbackend.board.dto.util.BoardCategoryDTO;
+import com.swyg.picketbackend.board.dto.util.CommentDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -16,9 +12,8 @@ import java.util.List;
 
 
 @Getter
+@ToString
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class GetBoardDetailsResponseDTO {
 
     @Schema(description = "게시글 번호", example = "1")
@@ -33,8 +28,8 @@ public class GetBoardDetailsResponseDTO {
     @Schema(description = "버킷 작성자 닉네임", example = "닉네임")
     private String nickname; // 작성자 닉네임
 
-
     @Schema(description = "마감기한", example = "2023-12-30")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate deadline; // 마감 기한
 
     @Schema(description = "버킷 이미지 파일", example = "Amazon s3에 저장된 이미지 주소(https://swyg-picket.s3.ap-northeast-2.amazonaws.com" +
@@ -47,9 +42,27 @@ public class GetBoardDetailsResponseDTO {
     @Schema(description = "버킷 스크랩 개수", example = "10")
     private Long scrapCount; // 스크랩 개수
 
-    @Schema(description = "버킷 댓글 목록", example = "댓글 목록")
-    private List<?> commentList; // 게시글 댓글 리스트
+    @Schema(description = "버킷 카테고리", example = "[3 건강,4 자기개발]")
+    private List<BoardCategoryDTO> categoryList;  // 카테고리 번호 및 이름가져오기
+
+    @Schema(description = "버킷 댓글 목록", example = "댓글 작성자 닉네임,댓글내용,작성날짜,수정날짜")
+    private List<CommentDTO> commentList; // 게시글 댓글 리스트
 
 
+    // entity -> dto
+    public static GetBoardDetailsResponseDTO toDTOList(Board board) {
+        return GetBoardDetailsResponseDTO.builder()
+                .boardId(board.getId())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .nickname(board.getMember().getNickname())
+                .deadline(board.getDeadline())
+                .filepath(board.getFilepath())
+                .heartCount((long) board.getHeart().size()) // 좋아요 수
+                .scrapCount((long) board.getScrap().size()) // 댓글 수
+                .categoryList(BoardCategoryDTO.toCategoryDTO(board.getBoardCategoryList()))
+                .commentList(CommentDTO.toCommentDTO(board.getCommentList()))
+                .build();
+    }
 
 }

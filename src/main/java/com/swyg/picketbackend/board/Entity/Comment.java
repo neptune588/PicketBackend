@@ -1,13 +1,10 @@
 package com.swyg.picketbackend.board.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swyg.picketbackend.auth.domain.Member;
-import com.swyg.picketbackend.board.dto.req.PostCommentRequestDTO;
 import com.swyg.picketbackend.global.dto.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -21,12 +18,14 @@ public class Comment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
+    @JsonBackReference
     private Board board;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
+    @JsonBackReference
     private Member member;
 
     private String content; // 댓글 내용
@@ -39,5 +38,13 @@ public class Comment extends BaseEntity {
         comment.member = member;
         comment.board = board;
         return comment;
+    }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                '}';
     }
 }

@@ -21,5 +21,6 @@ public class CommentResponseDTO {
     private String nickname; // 댓글 작성 회원 닉네임
 
     private String comment; // 댓글 내용
+    
 
 }

@@ -2,10 +2,13 @@ package com.swyg.picketbackend.auth.domain;
 
 import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.board.Entity.Comment;
+import com.swyg.picketbackend.board.Entity.Heart;
+import com.swyg.picketbackend.board.Entity.Scrap;
 import com.swyg.picketbackend.global.dto.BaseEntity;
 import com.swyg.picketbackend.auth.util.Role;
 import com.swyg.picketbackend.auth.util.SocialType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +18,8 @@ import java.util.List;
 
 @Getter
 @Entity
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class Member extends BaseEntity {
 
@@ -45,9 +50,14 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true) // 회원이 삭제되면 삭제 회원이 작성한 댓글도 삭제
     private List<Comment> commentList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Heart> heart = new ArrayList<>(); // 좋아요
 
-    @Builder
-    public Member(String email, String password, Role role, String nickname, String imageUrl, SocialType socialType, String providerId
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Scrap> scrap = new ArrayList<>(); // 스크랩
+
+
+    /*public Member(String email, String password, Role role, String nickname, String imageUrl, SocialType socialType, String providerId
             , List<Board> boardList) {
         this.email = email;
         this.password = password;
@@ -57,14 +67,14 @@ public class Member extends BaseEntity {
         this.socialType = socialType;
         this.providerId = providerId;
         this.boardList = boardList;
-    }
+    }*/
 
 
     // 게시글 등록을 위한 회원 번호 set
-    public static Member setId(Long id) {
-        Member member = new Member();
-        member.id = id;
-        return member;
+    public static Member setId(Long memberId) {
+        return Member.builder()
+                .id(memberId)
+                .build();
     }
 
     // 비밀번호 변경 메서드

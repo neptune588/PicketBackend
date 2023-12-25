@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PostCommentRequestDTO {
+public class PostCommentRequestDTO { // 댓글 작성 DTO
 
     private String content; // 댓글 내용
 }
