@@ -9,6 +9,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Entity
 @Getter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Scrap {
@@ -28,5 +29,12 @@ public class Scrap {
     @JsonIgnore
     private Board board;
 
-
+    
+    // 스크랩 등록을 위한  parameter set 메서드
+    public static Scrap addScrap(Member member, Board board) {
+        return Scrap.builder()
+                .member(member)
+                .board(board)
+                .build();
+    }
 }
