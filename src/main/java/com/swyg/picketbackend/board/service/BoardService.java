@@ -102,7 +102,7 @@ public class BoardService {
         }
 
         // Amazon S3 파일 저장
-        s3Service.uploadFile(file,filename);
+        s3Service.uploadFile(file, filename);
 
     }
 
@@ -152,7 +152,7 @@ public class BoardService {
 
 
         // 파일을 수정하지 않는 경우(기존 파일일 경우)
-        if (s3Service.areS3AndLocalFilesEqual(currentFileName,file)) {
+        if (s3Service.areS3AndLocalFilesEqual(currentFileName, file)) {
             log.info("기존 파일일 경우 버킷 수정...");
             target.updateBoard(patchBoardRequestDTO, currentFileName, currentFileUrl);
             try {// dirty checking
@@ -176,7 +176,7 @@ public class BoardService {
         boardRepository.save(target); // dirty checking
 
         // Amazon S3 새로운 이미지 파일 저장
-        s3Service.uploadFile(file,newFilename);
+        s3Service.uploadFile(file, newFilename);
 
         // Amazon s3에서 기존 파일 삭제
         s3Service.deleteFile(currentFileName);
@@ -216,6 +216,8 @@ public class BoardService {
         Long currentMemberId = SecurityUtil.getCurrentMemberId();
         Long targetMemberId = target.getMember().getId();
 
+        String targetFileName = target.getFilename();
+
         if (!currentMemberId.equals(targetMemberId)) { // 로그인한 회원의 작성 버킷인지 확인
             throw new CustomException(ErrorCode.UNAUTHORIZED_BOARD_DELETE);
         }
@@ -227,12 +229,8 @@ public class BoardService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_BOARD_DELETE);
         }
 
-       /* // 4. Amazon s3 이미지 삭제
-        try {
-            amazonS3Client.deleteObject(bucket, target.getFilename());
-        } catch (SdkClientException e) {
-            throw new CustomException(ErrorCode.S3_DELETE_ERROR);
-        }*/
+        // 4. Amazon s3 이미지 삭제
+        s3Service.deleteFile(targetFileName);
 
     }
 
