@@ -1,5 +1,6 @@
 package com.swyg.picketbackend.auth.domain;
 
+import com.swyg.picketbackend.auth.dto.member.PatchMemberRequestDTO;
 import com.swyg.picketbackend.board.Entity.Board;
 import com.swyg.picketbackend.board.Entity.Comment;
 import com.swyg.picketbackend.board.Entity.Heart;
@@ -34,7 +35,9 @@ public class Member extends BaseEntity {
 
     private String nickname; // 닉네임
 
-    private String imageUrl; // 프로필 이미지
+    private String imageName; // 프로필 이미지 이름
+
+    private String imageUrl; // 프로필 이미지 주소
 
     private String providerId; // 소셜 로그인 구분 아이디
 
@@ -85,6 +88,14 @@ public class Member extends BaseEntity {
     // 닉네임 설정 메서드
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+
+    // 프로필 수정 메서드
+    public void updateMember(PatchMemberRequestDTO patchMemberRequestDTO, String imageName, String imageUrl) {
+        this.nickname = patchMemberRequestDTO.getNickname();
+        this.imageName = imageName;
+        this.imageUrl = imageUrl;
     }
 
 

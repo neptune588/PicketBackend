@@ -40,21 +40,18 @@ public class BoardService {
 
     private final AmazonS3Client amazonS3Client;
 
+    private final S3Service s3Service;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     // 나의 버킷 리스트 조회
     @Transactional
-    public List<GetMyBoardListResponseDTO> findMyBoardList(Long memberId) { // 나의 버킷리스트 조회
+    public List<GetMyBoardListResponseDTO> findMyBoardList() { // 나의 버킷리스트 조회
 
         Long currentMemberId = SecurityUtil.getCurrentMemberId(); // 현재 로그인한 회원 ID
 
-        if (!memberId.equals(currentMemberId)) { // 현재 로그인한 회원인지 확인
-            throw new CustomException(ErrorCode.UNAUTHORIZED_ACCESS);
-        }
-
-        List<Board> myBoardList = boardRepository.findAllByMemberId(memberId);
+        List<Board> myBoardList = boardRepository.findAllByMemberId(currentMemberId);
 
         return GetMyBoardListResponseDTO.toDTOList(myBoardList);
     }
@@ -78,8 +75,7 @@ public class BoardService {
 
     //  첨부파일 있을 시 게시글 작성 서비스
     @Transactional
-    public void addBoardWithFile(@RequestPart PostBoardRequestDTO postBoardRequestDTO,
-                                 @RequestPart("file") MultipartFile file) throws IOException {
+    public void addBoardWithFile(PostBoardRequestDTO postBoardRequestDTO, MultipartFile file) throws IOException {
 
         Long currentMemberId = SecurityUtil.getCurrentMemberId(); // 현재 로그인한 회원 ID
 
@@ -106,10 +102,7 @@ public class BoardService {
         }
 
         // Amazon S3 파일 저장
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(file.getContentType());
-        metadata.setContentLength(file.getSize());
-        amazonS3Client.putObject(bucket, filename, file.getInputStream(), metadata);
+        s3Service.uploadFile(file,filename);
 
     }
 
@@ -173,7 +166,7 @@ public class BoardService {
         //  새로운 파일을 등록하는 경우
         UUID uuid = UUID.randomUUID();
 
-        String newFilename = uuid + "_" + file.getName(); // 새로운 파일 이름
+        String newFilename = uuid + "_" + file.getOriginalFilename(); // 새로운 파일 이름
 
         String newFileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + newFilename; // 새로운 파일 url
 
@@ -189,12 +182,10 @@ public class BoardService {
         boardRepository.save(target); // dirty checking
 
         // Amazon S3 새로운 이미지 파일 저장
-        ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(file.getContentType());
-        metadata.setContentLength(file.getSize());
-        amazonS3Client.putObject(bucket, newFilename, file.getInputStream(), metadata);
-    }
+        s3Service.uploadFile(file,newFilename);
 
+        //
+    }
 
     // 첨부파일이 없는 버킷 수정
     public void modifyBoard(Long boardId, PatchBoardRequestDTO patchBoardRequestDTO) {
@@ -211,7 +202,7 @@ public class BoardService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_BOARD_UPDATE);
         }
 
-        target.updateBoard(patchBoardRequestDTO, null, null); // dirty checking
+        target.updateBoard(patchBoardRequestDTO, null, null);
 
         try {// dirty checking
             boardRepository.save(target);

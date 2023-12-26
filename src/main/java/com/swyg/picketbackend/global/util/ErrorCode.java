@@ -43,7 +43,7 @@ public enum ErrorCode {
 
 
     /*404 NOT_FOUND : 요청 리소스를 찾을 수 없음*/
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이메일의 회원을 찾을 수 업습니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "요청 리소스를 찾을 수 없습니다."),
     BOARD_NOT_FOUND(HttpStatus.NOT_FOUND,"버킷을 찾을 수 없습니다."),
@@ -51,7 +51,7 @@ public enum ErrorCode {
 
     /*500 NOT_FOUND : 서버 내부 오류*/
     DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"내부 오류로 인해 버킷 삭제에 실패했습니다."),
-    IO_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"입출력 오류가 발생하였습니다."),
+    IO_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"파일 입출력 오류가 발생하였습니다."),
     
     // s3 관련
     S3_DELETE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"S3에서 이미지 삭제가 실패하였습니다.");

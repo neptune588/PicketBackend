@@ -18,7 +18,9 @@ public enum SuccessCode {
     SELECT_SUCCESS(HttpStatus.OK,"SELECT_SUCCESS"),
 
     UPDATE_SUCCESS(HttpStatus.OK,"UPDATE_SUCCESS"),
-    
+
+    // 비밀 번호 관련
+    PASSWORD_UPDATE_MAIL_SUCCESS(HttpStatus.OK,"비밀번호 변경 메일을 전송하였습니다."),
     
     // 버킷 관련
     BOARD_UPDATE_SUCCESS(HttpStatus.OK,"버킷을 수정하였습니다."),

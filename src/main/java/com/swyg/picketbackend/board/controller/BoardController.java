@@ -35,9 +35,9 @@ public class BoardController {
 
     // Todo: 완료
     @Operation(summary = "나의 버킷리스트 조회", description = "로그인한 회원의 버킷리스트 조회 api 퀴리스트링에 memberId 필요")
-    @GetMapping("/myposts/{memberId}") // 나의 버킷 리스트 조회
-    public ResponseEntity<?> myBoardList(@PathVariable Long memberId) {
-        List<GetMyBoardListResponseDTO> myBoardList = boardService.findMyBoardList(memberId);
+    @GetMapping("/myposts") // 나의 버킷 리스트 조회
+    public ResponseEntity<?> myBoardList() {
+        List<GetMyBoardListResponseDTO> myBoardList = boardService.findMyBoardList();
         return (myBoardList == null || myBoardList.isEmpty()) ?
                 ResponseEntity.status(HttpStatus.SC_OK).body("empty") :
                 ResponseEntity.status(HttpStatus.SC_OK).body(myBoardList);
@@ -58,7 +58,7 @@ public class BoardController {
     }
 
     // TODO : 완료
-    @Operation(summary = "버킷리스트 작성", description = "버킷리스트 작성 API")
+    @Operation(summary = "버킷리스트 작성", description = "카테고리는 번호 목록으로 넘겨줄 것 ex) categoryList:[1,2]")
     @PostMapping // 버킷리스트 작성
     public ResponseEntity<SuccessResponse> boardAdd(
             @RequestPart PostBoardRequestDTO postBoardRequestDTO,

@@ -2,22 +2,21 @@ package com.swyg.picketbackend.auth.service;
 
 
 import com.swyg.picketbackend.auth.domain.Member;
-import com.swyg.picketbackend.auth.dto.member.PutPasswordDTO;
+import com.swyg.picketbackend.auth.dto.member.PatchMemberRequestDTO;
 import com.swyg.picketbackend.auth.repository.MemberRepository;
+import com.swyg.picketbackend.auth.util.SecurityUtil;
+import com.swyg.picketbackend.board.service.S3Service;
 import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.ErrorCode;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.security.SecureRandom;
+import java.io.IOException;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -25,96 +24,67 @@ import java.security.SecureRandom;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JavaMailSender javaMailSender;
+
+    private final S3Service s3Service;
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     @Transactional
-    public void passwordModify(PutPasswordDTO putPasswordDTO) {
+    public void nicknameCheck(String nickname) {
+        boolean isExisted = memberRepository.existsByNickname(nickname);
 
-        String email = putPasswordDTO.getEmail();
-
-        // 메일에 해당하는 member get 존재하지 않으면 elseThrow
-        Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ErrorCode.EMAIL_NOT_FOUND));
-
-        String newPassword = generatePassword();
-
-        log.info(newPassword);
-
-        String encNewPassword = passwordEncoder.encode(newPassword);
-
-        member.modifyPassword(encNewPassword);
-
-        memberRepository.save(member);
-
-        // 비밀번호 메일 전송 로직
-        MimeMessage mimeMessage = createMessage(email,newPassword);
-        log.info("Mail 전송 시작");
-        javaMailSender.send(mimeMessage);
-        log.info("Mail 전송 완료");
-
-    }
-
-
-    public String generatePassword() { // 비밀번호 생성 메서드
-
-        StringBuilder password = new StringBuilder();
-
-        while (password.length() < 8 || password.length() > 15) {
-            char randomChar = getRandomChar();
-            password.append(randomChar);
+        if (isExisted) { // 이미 존재하는 닉네임이면 예외 발생
+            throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
         }
 
-        return password.toString();
     }
 
+    @Transactional
+    public void modifyMemberWithFile(PatchMemberRequestDTO patchMemberRequestDTO, MultipartFile file) throws IOException {
+        Long currentLoginId = SecurityUtil.getCurrentMemberId(); // 현재 로그인 한 ID
 
-    public char getRandomChar() { // 랜덤 문자 생성 메서드
+        // 1. 수정할 회원 찾기
+        Member target = memberRepository.findById(currentLoginId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        SecureRandom random = new SecureRandom();
-        int charType = random.nextInt(2);
 
-        return switch (charType) {
-            case 0 ->
-                // 숫자를 무작위로 선택하여 '0'부터 '9'까지의 문자로 변환
-                    (char) ('0' + random.nextInt(10));
-            case 1 ->
-                /// 소문자 알파벳을 무작위로 선택하여 'a'부터 'z'까지의 문자로 변환
-                    (char) ('a' + random.nextInt(26));
-            default ->
-                // 이 부분은 예상치 못한 상황이 발생했을 때의 예외 처리
-                    throw new IllegalStateException("Unexpected value: " + charType);
-        };
-    }
+        String targetFileName = target.getImageName(); // 회원의 기존 프로필 이미지 이름
+        String targetFileUrl = target.getImageUrl(); // 회원의 기존 프로필 이미지 URl
 
-    public MimeMessage createMessage(String email, String newPassword) {  // 비밀번호 전송 메일 메서드
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-
-        try {
-            MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true);
-            messageHelper.setFrom("picket@domain.com");  // TODO : 사이트 도메인으로 추후 수정할 것
-            messageHelper.setTo(email);
-            messageHelper.setSubject("[Picket] 비밀번호 변경 안내");
-
-            String body = "<html><body style='background-color: #000000 !important; margin: 0 auto; max-width: 600px; word-break: break-all; padding-top: 50px; color: #ffffff;'>";
-            body += "<h1 style='padding-top: 50px; font-size: 30px;'>비밀번호 변경 안내</h1>";
-            body += "<p style='padding-top: 20px; font-size: 18px; opacity: 0.6; line-height: 30px; font-weight: 400;'>안녕하세요? Bucket 관리자입니다.<br />";
-            body += "계정의 새로운 비밀번호가 설정되었습니다.<br />";
-            body += "하단의 새로운 비밀번호로 로그인 해주세요.<br />";
-            body += "항상 최선의 노력을 다하는 Picket이 되겠습니다.<br />";
-            body += "감사합니다.</p>";
-            body += "<div class='code-box' style='margin-top: 50px; padding-top: 20px; color: #000000; padding-bottom: 20px; font-size: 25px; text-align: center; background-color: #f4f4f4; border-radius: 10px;'>" + newPassword + "</div>";
-            body += "</body></html>";
-
-            messageHelper.setText(body, true);
-
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
+        // 파일을 수정하지 않는 경우(기존 파일일 경우)
+        if (s3Service.areS3AndLocalFilesEqual(targetFileName, file)) {
+            log.info("기존 파일일 경우 프로필 수정...");
+            target.updateMember(patchMemberRequestDTO, targetFileName, targetFileUrl);
+            try {
+                memberRepository.save(target); // dirty checking
+            } catch (IllegalArgumentException e) {
+                throw new CustomException(ErrorCode.UNAUTHORIZED_BOARD_DELETE);
+            }
+            return;
         }
-        return mimeMessage;
+
+        log.info("새로운 파일일 경우 프로필 수정...");
+        //  새로운 파일을 등록하는 경우
+        UUID uuid = UUID.randomUUID();
+
+        String newFilename = uuid + "_" + file.getOriginalFilename(); // 새로운 파일 이름
+
+        String newFileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + newFilename; // 새로운 파일 url
+
+        // 1. 프로필 수정
+        target.updateMember(patchMemberRequestDTO, newFilename, newFileUrl);
+        memberRepository.save(target); // dirty checking
+
+        // 2. Amazon S3 새로운 이미지 파일 저장
+        s3Service.uploadFile(file, newFilename);
+        // 3. Amazon S3 기존 이미지 삭제
+
     }
 
 
+    public void modifyMember(PatchMemberRequestDTO patchMemberRequestDTO) {
+    }
 
 
 }

@@ -5,6 +5,7 @@ import com.swyg.picketbackend.auth.dto.auth.req.SignupRequestDTO;
 import com.swyg.picketbackend.auth.dto.auth.res.SignupResponseDTO;
 import com.swyg.picketbackend.auth.dto.auth.res.TokenResponseDTO;
 import com.swyg.picketbackend.auth.dto.auth.req.TokenRequestDTO;
+import com.swyg.picketbackend.auth.dto.member.PutPasswordDTO;
 import com.swyg.picketbackend.auth.service.AuthService;
 import com.swyg.picketbackend.global.dto.SuccessResponse;
 import com.swyg.picketbackend.global.exception.CustomException;
@@ -63,6 +64,15 @@ public class AuthController {
     @PostMapping("/reissue")
     public ResponseEntity<TokenResponseDTO> reissue(@RequestBody TokenRequestDTO tokenRequestDto) throws CustomException {
         return ResponseEntity.ok(authService.reissue(tokenRequestDto));
+    }
+
+    
+    // TODO : 완료
+    @Operation(summary = "가입 이메일로 비밀번호 초기화", description = "비밀번호 찾기 API")
+    @PatchMapping("/reset-password")
+    public ResponseEntity<SuccessResponse> modifyPassword(@RequestBody PutPasswordDTO putPasswordDTO) throws CustomException {
+        authService.passwordModify(putPasswordDTO);
+        return SuccessResponse.success(SuccessCode.PASSWORD_UPDATE_MAIL_SUCCESS);
     }
 
 

@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ScrapController {
 
     private final ScrapService scrapService;
-
-
+    
+    // TODO : 완료
     @PostMapping("/{boardId}/scrap")
     public ResponseEntity<?> toggleScrap(@PathVariable Long boardId) {
         Long currentLoginId = SecurityUtil.getCurrentMemberId();

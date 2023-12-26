@@ -60,8 +60,9 @@ public class SecurityConfig {
                                 .requestMatchers("/board/myposts/**").authenticated() // 내 버킷목록 보기
                                 .requestMatchers(HttpMethod.POST, "/board/**").authenticated() // 버킷 관련 등록
                                 .requestMatchers(HttpMethod.DELETE, "/board/**").authenticated() // 버킷 관련 삭제
-                                .requestMatchers(HttpMethod.PATCH, "/board/**").authenticated() // 버킷 관련 수정
-                                .requestMatchers(HttpMethod.PUT, "/board/**").authenticated() // 버킷 관련 수정
+                                .requestMatchers(HttpMethod.PATCH, "/board/**").authenticated() // 버킷 관련 일부 수정
+                                .requestMatchers(HttpMethod.PUT, "/board/**").authenticated() // 버킷 관련 전체 수정
+                                .requestMatchers(HttpMethod.POST,"/member/profile/check-nickname").authenticated() // 프로필 닉네임 체크
                                 .anyRequest().authenticated())
 
                 .with(new JwtSecurityConfig(tokenProvider), customizer -> {
