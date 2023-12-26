@@ -53,15 +53,17 @@ public class MemberService {
         String targetFileUrl = target.getImageUrl(); // 회원의 기존 프로필 이미지 URl
 
         // 파일을 수정하지 않는 경우(기존 파일일 경우)
-        if (s3Service.areS3AndLocalFilesEqual(targetFileName, file)) {
-            log.info("기존 파일일 경우 프로필 수정...");
-            target.updateMember(patchMemberRequestDTO, targetFileName, targetFileUrl);
-            try {
-                memberRepository.save(target); // dirty checking
-            } catch (IllegalArgumentException e) {
-                throw new CustomException(ErrorCode.UNAUTHORIZED_BOARD_DELETE);
+        if (targetFileName != null && targetFileUrl != null) { // 1. 기존 이미지가 존재하는 경우
+            if (s3Service.areS3AndLocalFilesEqual(targetFileName, file)) {
+                log.info("기존 파일일 경우 프로필 수정...");
+                target.updateMember(patchMemberRequestDTO, targetFileName, targetFileUrl);
+                try {
+                    memberRepository.save(target); // dirty checking
+                } catch (IllegalArgumentException e) {
+                    throw new CustomException(ErrorCode.UNAUTHORIZED_BOARD_DELETE);
+                }
+                return;
             }
-            return;
         }
 
         log.info("새로운 파일일 경우 프로필 수정...");
@@ -78,8 +80,11 @@ public class MemberService {
 
         // 2. Amazon S3 새로운 이미지 파일 저장
         s3Service.uploadFile(file, newFilename);
-        // 3. Amazon S3 기존 이미지 삭제
 
+        // 3. Amazon S3 기존 이미지 삭제
+        if (targetFileName != null && !targetFileName.isEmpty()) {
+            s3Service.deleteFile(targetFileName);
+        }
     }
 
 

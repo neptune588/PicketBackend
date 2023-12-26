@@ -10,6 +10,7 @@ import com.swyg.picketbackend.board.Entity.Category;
 import com.swyg.picketbackend.board.dto.req.board.GetBoardListRequestDTO;
 import com.swyg.picketbackend.board.dto.req.board.PostBoardRequestDTO;
 import com.swyg.picketbackend.board.dto.res.board.GetBoardDetailsResponseDTO;
+import com.swyg.picketbackend.board.dto.res.board.GetBoardListResponseDTO;
 import com.swyg.picketbackend.board.dto.res.board.GetMyBoardListResponseDTO;
 import com.swyg.picketbackend.board.dto.req.board.PatchBoardRequestDTO;
 import com.swyg.picketbackend.board.repository.BoardCategoryRepository;
@@ -20,6 +21,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -57,13 +59,14 @@ public class BoardService {
     }
 
     @Transactional
-    public Slice<GetMyBoardListResponseDTO> findList(GetBoardListRequestDTO getBoardListRequestDTO) { // TODO : 검색 조건 버킷리스트 조회(무한 스크롤 구현 필요)
-        Slice<Board> boardSearchList = boardRepository.findByList(getBoardListRequestDTO);
-        return null;
+    public Slice<GetBoardListResponseDTO> searchBoardList(String keyword, List<Long> categoryList, Pageable pageable) {
+        Slice<Board> resultList = boardRepository.boardSearchList(keyword, categoryList, pageable);
+        return GetBoardListResponseDTO.toDTOList(resultList);
     }
 
+
     @Transactional
-    public GetBoardDetailsResponseDTO detailBoard(Long boardId) { // Todo: 댓글,좋아요 개수,스크랩 개수까지 다 가져오기
+    public GetBoardDetailsResponseDTO detailBoard(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
 

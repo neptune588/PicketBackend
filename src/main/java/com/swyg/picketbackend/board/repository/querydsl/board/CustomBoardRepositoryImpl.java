@@ -1,16 +1,22 @@
 package com.swyg.picketbackend.board.repository.querydsl.board;
 
 
-
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.swyg.picketbackend.auth.domain.QMember;
 import com.swyg.picketbackend.board.Entity.*;
 import com.swyg.picketbackend.board.dto.req.board.GetBoardListRequestDTO;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Repository
@@ -38,48 +44,58 @@ public class CustomBoardRepositoryImpl implements CustomBoardRepository {
                 .fetchOne();
     }
 
-
-
     @Override
-    public Slice<Board> findByList(GetBoardListRequestDTO getBoardListRequestDTO) {
-       /* QBoard board = QBoard.board;
+    public Slice<Board> boardSearchList(String keyword, List<Long> categoryList, Pageable pageable) {
+        QBoard board = QBoard.board;
+        QBoardCategory boardCategory = QBoardCategory.boardCategory;
+        QCategory category = QCategory.category;
+        QMember member = QMember.member;
+        QScrap scrap = QScrap.scrap;
+        QHeart heart = QHeart.heart;
 
-        // parameter setting
-        String keyword = boardListRequestDTO.getKeyword(); // 키워드
-        List<String> categoryList = boardListRequestDTO.getCategoryList();  // 해당 카테고리 목록
-        int page = boardListRequestDTO.getPage(); // 페이지 번호
-        int size = boardListRequestDTO.getSize(); // 페이지 사이즈
+        EntityGraph<?> entityGraph = entityManager.createEntityGraph(Board.class);
+        entityGraph.addSubgraph("commentList");
+        entityGraph.addSubgraph("boardCategoryList");
+        entityGraph.addSubgraph("heart");
+        entityGraph.addSubgraph("scrap");
+        entityGraph.addSubgraph("member");
 
-        // 카테고리 조건
-        BooleanExpression categoryExpression = board.categoryList.any().name.in(boardListRequestDTO.getCategoryList());
-
-        // 검색어 조건
-        BooleanExpression keywordExpression = board.title.containsIgnoreCase(boardListRequestDTO.getKeyword())
-                .or(board.content.containsIgnoreCase(boardListRequestDTO.getKeyword()));
-
-        // 카테고리 + 검색어 조건
-        BooleanExpression condition = categoryExpression.and(keywordExpression);
-
-        // 카테고리 선택 안했으면 카테고리 조건 무시
-        if (categoryList == null || categoryList.isEmpty()) {
-            condition = keywordExpression;
-        }
-
-        List<Board> boardList = jpaQueryFactory
-                .selectFrom(board)
-                .where(condition)
-                .offset((long) page * size)
-                .limit(size + 1) // 1개 더 가져와서 hasNext 여부 확인
+        // 카테고리별 Board ID 조회
+        List<Long> boardIds = jpaQueryFactory
+                .select(boardCategory.board.id)
+                .from(boardCategory)
+                .where(boardCategory.category.id.in(categoryList))
+                .distinct()
                 .fetch();
 
-        boolean hasNext = boardList.size() > size;
 
-        if(hasNext){
-            boardList.remove(size);
+        // 게시글 검색 조건
+        BooleanExpression searchCondition;
+        if (StringUtils.hasText(keyword)) {
+            searchCondition = board.id.in(boardIds)
+                    .and(board.title.containsIgnoreCase(keyword)
+                            .or(board.content.containsIgnoreCase(keyword)));
+        } else {
+            // 키워드가 주어지지 않은 경우 모든 게시글을 대상으로 함
+            searchCondition = board.id.in(boardIds);
         }
 
-        return new SliceImpl<>(boardList, PageRequest.of(page,size),hasNext);*/
-        return null;
+
+        // 페이징 및 무한 스크롤
+        List<Board> boardList = jpaQueryFactory
+                .selectFrom(board)
+                .where(searchCondition)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1) // 1개 더 가져와서 hasNext 여부 확인
+                .fetch();
+
+        boolean hasNext = boardList.size() > pageable.getPageSize();
+
+        if (hasNext) {
+            boardList.remove(pageable.getPageSize());
+        }
+
+        return new SliceImpl<>(boardList, pageable, hasNext);
     }
 
 

@@ -1,11 +1,10 @@
 package com.swyg.picketbackend.auth.dto.member;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Getter
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class PatchMemberRequestDTO {
 

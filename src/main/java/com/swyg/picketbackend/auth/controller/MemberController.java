@@ -6,6 +6,7 @@ import com.swyg.picketbackend.auth.service.MemberService;
 import com.swyg.picketbackend.global.exception.CustomException;
 import com.swyg.picketbackend.global.util.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @Log4j2
+@Tag(name = "MemberController", description = "회원 관련 api")
 @RestController
 @RequestMapping("/member")
 @RequiredArgsConstructor

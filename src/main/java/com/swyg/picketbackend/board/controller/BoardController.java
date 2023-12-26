@@ -3,6 +3,7 @@ package com.swyg.picketbackend.board.controller;
 import com.swyg.picketbackend.board.dto.req.board.GetBoardListRequestDTO;
 import com.swyg.picketbackend.board.dto.req.board.PostBoardRequestDTO;
 import com.swyg.picketbackend.board.dto.res.board.GetBoardDetailsResponseDTO;
+import com.swyg.picketbackend.board.dto.res.board.GetBoardListResponseDTO;
 import com.swyg.picketbackend.board.dto.res.board.GetMyBoardListResponseDTO;
 import com.swyg.picketbackend.board.dto.req.board.PatchBoardRequestDTO;
 import com.swyg.picketbackend.board.service.BoardService;
@@ -15,7 +16,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.HttpStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,11 +46,15 @@ public class BoardController {
                 ResponseEntity.status(HttpStatus.SC_OK).body(myBoardList);
     }
 
-    //
+
     @Operation(summary = "전체&카테고리&검색 기반 버킷리스트 조회", description = "전체 또는 검색 조건에 따른 무한 스크롤 버킷리스트 목록을 반환하는 api")
-    @GetMapping("/list") // 전체 버킷 리스트 조회
-    public Slice<GetMyBoardListResponseDTO> boardList(GetBoardListRequestDTO getBoardListRequestDTO) {
-        return boardService.findList(getBoardListRequestDTO);
+    @GetMapping("/list/search") // 전체 버킷 리스트 조회
+    public Slice<GetBoardListResponseDTO> boardSearchList(
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "categoryList", required = true) List<Long> categoryList,
+            @PageableDefault(size = 8, page = 0) Pageable pageable) {
+        return boardService.searchBoardList(keyword, categoryList, pageable);
+
     }
 
     // TODO : 완료
@@ -89,7 +96,7 @@ public class BoardController {
                 boardService.modifyBoardWithFile(boardId, patchBoardRequestDTO, file);
             } else {
                 log.info("첨부파일 null 일 경우 modify...");
-                boardService.modifyBoard(boardId,patchBoardRequestDTO);
+                boardService.modifyBoard(boardId, patchBoardRequestDTO);
             }
         } catch (IOException e) {
             throw new CustomException(ErrorCode.IO_ERROR);
