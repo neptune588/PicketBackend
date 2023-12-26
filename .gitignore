@@ -38,7 +38,8 @@ out/
 
 
 ### application.yml 관련 ###
-/src/main/resources/application-jwt.yml
-/src/main/resources/application-aws.yml
-/src/main/resources/application-google.yml
+application.yml
+application-aws.yml
+application-google.yml
+application-jwt.yml
 
