@@ -35,3 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+### application.yml 관련 ###
+/src/main/resources/application-jwt.yml
+/src/main/resources/application-aws.yml
+/src/main/resources/application-google.yml
+

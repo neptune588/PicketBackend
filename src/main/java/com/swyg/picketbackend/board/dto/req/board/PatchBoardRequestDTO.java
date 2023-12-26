@@ -26,11 +26,5 @@ public class PatchBoardRequestDTO {
     @Schema(description = "종료 날짜",example = "deadline")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd",timezone = "Asia/Seoul")
     private LocalDate deadline; // 종료 날짜
-
-    @Schema(description = "파일 이름",example = "filename")
-    private String filename; // 파일 이름
-
-    @Schema(description = "파일 경로",example = "filepath")
-    private String filepath; // 파일 경로
     
 }

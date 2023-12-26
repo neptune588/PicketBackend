@@ -146,14 +146,14 @@ public class BoardService {
             throw new CustomException(ErrorCode.UNAUTHORIZED_BOARD_UPDATE);
         }
 
-        String currentFileName = patchBoardRequestDTO.getFilename(); // 받아온 파일 이름
+        String currentFileName = target.getFilename(); // 현재 파일 이름
 
-        String currentFileUrl = patchBoardRequestDTO.getFilepath(); // 받아온 파일 url
+        String currentFileUrl = target.getFilepath(); // 현재 파일 경로
 
-        String targetFileName = target.getFilename(); // 버킷의 기존 파일 이름
 
         // 파일을 수정하지 않는 경우(기존 파일일 경우)
-        if (currentFileName.equals(targetFileName)) {
+        if (s3Service.areS3AndLocalFilesEqual(currentFileName,file)) {
+            log.info("기존 파일일 경우 버킷 수정...");
             target.updateBoard(patchBoardRequestDTO, currentFileName, currentFileUrl);
             try {// dirty checking
                 boardRepository.save(target);
@@ -164,18 +164,12 @@ public class BoardService {
         }
 
         //  새로운 파일을 등록하는 경우
+        log.info("새로운 파일일 경우 버킷 수정...");
         UUID uuid = UUID.randomUUID();
 
         String newFilename = uuid + "_" + file.getOriginalFilename(); // 새로운 파일 이름
 
         String newFileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + newFilename; // 새로운 파일 url
-
-      /*  // Amazon s3에서 기존 파일 삭제
-        try {
-            amazonS3Client.deleteObject(bucket, target.getFilename());
-        } catch (SdkClientException e) {
-            throw new CustomException(ErrorCode.S3_DELETE_ERROR);
-        }*/
 
         // 새로운 파일을 포함한 버킷 수정
         target.updateBoard(patchBoardRequestDTO, newFilename, newFileUrl);
@@ -184,7 +178,8 @@ public class BoardService {
         // Amazon S3 새로운 이미지 파일 저장
         s3Service.uploadFile(file,newFilename);
 
-        //
+        // Amazon s3에서 기존 파일 삭제
+        s3Service.deleteFile(currentFileName);
     }
 
     // 첨부파일이 없는 버킷 수정
